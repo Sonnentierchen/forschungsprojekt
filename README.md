@@ -51,3 +51,9 @@ python setup.py install
 
 * Clone with git: https://github.com/matterport/Mask_RCNN **Mask RCNN's code has to be on the same level as this project's code, i.e. the folder Mask_RCNN and forschungsprojekt have to be in the same folder, as forschungsprojekt uses a relative path to Mask RCNN.**
 * Download the weights for the network at https://github.com/matterport/Mask_RCNN/releases and put them in the source folder of Mask RCNN
+
+# Notes
+
+Here is a collection of what to pay attention to when using the network.
+
+* Input images have to in **.png** format, .jpgs are not accepted, but the error occurs later when the shape of the image is to be accessed.

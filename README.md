@@ -5,13 +5,14 @@
 The following is supposed to describe the setup process to be able to run the Mask RCNN network (https://github.com/matterport/Mask_RCNN).
 
 * Download and install Anaconda (https://conda.io/docs/user-guide/install/download.html)
-* Create a virtual environment with Python 3.5: conda create -n tensorflow python=3.5
+* Create a virtual environment with Python 3.5 
+`conda create -n tensorflow python=3.5`
 * Activate the environment: source activate tensorflow
 * Do the following with activated source
-** conda install tensorflow
-** conda install matplotlib
-** conda install scikit-image
-** conda install opencv
+`conda install tensorflow`
+`conda install matplotlib`
+`conda install scikit-image`
+`conda install opencv`
 *
 ** Some more steps necessary with Cython etc.
 *

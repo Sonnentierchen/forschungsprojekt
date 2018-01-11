@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import os
+import shutil
 import sys
 import random
 import math
@@ -23,8 +24,22 @@ import utils
 import model as modellib
 import visualize
 
-def calc_save_bbs(imagesPath, outputPath, saveImagesPath, customBatchSize):
+def calc_save_bbs(imagesPath, customBatchSize, saveImagesPath, clearSaveImagesPath):
+
+    if clearSaveImagesPath:
+        for the_file in os.listdir(saveImagesPath):
+            file_path = os.path.join(saveImagesPath, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(e)
+
+
     numberOfImages = len(os.listdir(imagesPath))
+
+    if numberOfImages == 0:
+        return []
 
     # Root directory of the project
     ROOT_DIR = os.getcwd()
@@ -91,17 +106,20 @@ def calc_save_bbs(imagesPath, outputPath, saveImagesPath, customBatchSize):
         images.append(skimage.io.imread(image))
 
     #Run detection
-    currentBatch = 0
-    while currentBatch < numberOfImages:
+    accumulatedResults = []
+
+    for currentBatch in range(0, numberOfImages, batchSize):
         # Batch size stays the same everytime we call the model, we just need to keep track of what batch we are processing
         results = model.detect(images, verbose=1)
-        currentBatch += batchSize
+        accumulatedResults.extend(results)
 
-        # Visualize results
-        if saveImagesPath:
-            for index in range(numberOfImages):
-                r = results[index]
-                print(r['rois'])
-                visualize.display_instances(images[index], r['rois'], r['masks'], False, r['class_ids'], 
-                                        class_names, r['scores'])
-                plt.savefig(saveImagesPath + "/" + imageFileNames[index] + "_out.png")
+        for index in range(batchSize):
+            r = results[index]
+            # Visualize results
+            if saveImagesPath:
+                # We need to add currentBatch, because images store all images, not only the ones of the current batch
+                visualize.display_instances(images[currentBatch + index], r['rois'], r['masks'], False, r['class_ids'], 
+                                    class_names, r['scores'])
+                plt.savefig(saveImagesPath + "/" + imageFileNames[currentBatch + index] + "_out.png")
+
+    return accumulatedResults

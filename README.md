@@ -49,7 +49,7 @@ python setup.py install
 
 ## Setting up the Mask RCNN implementation
 
-* Clone with git: https://github.com/matterport/Mask_RCNN **Mask RCNN's code has to be on the same level as this project's code, i.e. the folder Mask_RCNN and forschungsprojekt have to be in the same folder, as forschungsprojekt uses a relative path to Mask RCNN.**
+* Clone with git: https://github.com/matterport/Mask_RCNN **Mask RCNN's code has to be in the same folder as the python script**
 * Download the weights for the network at https://github.com/matterport/Mask_RCNN/releases and put them in the source folder of Mask RCNN
 
 # Notes

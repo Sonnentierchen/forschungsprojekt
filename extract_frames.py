@@ -1,15 +1,41 @@
 import cv2
+import os
 
-def extract_frames(videoPath, frequency):
-	count = 0
+def storeImage(image, frameId, frames, outputImagesPath):
+	frames.append({'image' : image,
+			'frameNumber' : frameId})
+	if outputImagesPath:
+		cv2.imwrite(outputImagesPath + "frame%d.jpg" % frameId, image)
+
+def extract_frames(videoPath, outputImagesPath, maxNumberOfFrames=0, distribute="even"):
+	if not distribute in ["even", "none"]:
+		raise ValueError("Distribute needs to be either even or none.")
+
 	videocap = cv2.VideoCapture(videoPath)
 	success, image = videocap.read()
+
+	length = int(videocap.get(cv2.CAP_PROP_FRAME_COUNT))
+	# The user might not know that he has provided a number higher than the max. number of frames
+	if not maxNumberOfFrames < length:
+		maxNumberOfFrames = length
+
+	distribution = length if maxNumberOfFrames == 0 else maxNumberOfFrames
+	# Number of frames we need to skip to get an even distribution of the required frames count
+	skipFrames = int(round(length / distribution))
+
 	success = True
 	frames = []
+	frameId = 0
+
 	while success:
-		videocap.set(cv2.CAP_PROP_POS_MSEC, (count * frequency))
 		success, image = videocap.read()
-		frames.append(image)
-		count += 1
+		if distribute == "even" and frameId % skipFrames == 0:
+			# This is a frame that we have to store, because the user wanted an even
+			# distribution and we skipped enough frames to ensure the distribution
+			storeImage(image, frameId, frames, outputImagesPath)
+		elif distribute == "none" and frameId < maxNumberOfFrames:
+			storeImage(image, frameId, frames, outputImagesPath)
+
+		frameId += 1
 
 	return frames

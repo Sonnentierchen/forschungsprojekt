@@ -1,0 +1,4 @@
+- Extract ground truth bounding boxes from coco dataset
+- Annotate video frames with ground truth
+- Evaluate coco dataset precision
+- Evaluate precision on video frames

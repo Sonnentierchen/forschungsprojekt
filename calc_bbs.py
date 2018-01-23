@@ -110,7 +110,7 @@ def calc_save_bbs(imagesPath, customBatchSize, saveImagesPath, clearSaveImagesPa
 
     for currentBatch in range(0, numberOfImages, batchSize):
         # Batch size stays the same everytime we call the model, we just need to keep track of what batch we are processing
-        results = model.detect(images, verbose=1)
+        results = model.detect(images[currentBatch:currentBatch+batchSize], verbose=1)
         accumulatedResults.extend(results)
 
         for index in range(batchSize):

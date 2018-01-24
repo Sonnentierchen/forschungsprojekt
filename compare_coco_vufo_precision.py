@@ -1,5 +1,9 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import os
-import calc_bbs as cb
+import sys
+import datetime
 import extract_frames as extract
 
 from pycocotools.coco import COCO
@@ -8,10 +12,12 @@ from pycocotools import mask as maskUtils
 
 # The custom coco helper class implemented by the guys who made the Mask RCNN
 import coco
+# The adaption of the coco helper class to the VUFO videos
+import vufo
 
-from config import Config
-import utils
-import model as modellib
+from mrcnn.config import Config
+from mrcnn import utils
+import mrcnn.model as modellib
 
 ROOT_DIR = os.getcwd()
 
@@ -55,46 +61,77 @@ def evaluateCoco(model, dataset, year, output, limit):
 	if dataset is None or year is None:
 		return
 
-	print("MS COCO dataset of " + year + " at " + dataset)
+	cocoInputPath = os.path.join(dataset, year)
 
-	storeOutput = False
-	if output is not None:
-		storeOutput = True
-		print("Saving images to ", output)
-
-	cocoImagesOutputPath = os.path.join(output, "coco/" + year) 
-
-	if not os.path.exists(cocoImagesOutputPath):
-		os.makedirs(cocoImagesOutputPath)
-
-	dataset_val = coco.CocoDataset()
-	cocoDataSet = dataset_val.load_coco(dataset, year, "val", return_coco=True)
-	dataset_val.prepare()
-	print("Running COCO evaluation on {} images.".format(limit))
-	coco.evaluate_coco(model, dataset_val, cocoDataSet, "bbox", limit=int(limit), output=cocoImagesOutputPath, classNames=class_names)
-
-def evaluateVideo(model, videoPath, output, limit):
-	if videoPath is None:
+	if not os.path.exists(cocoInputPath):
 		return
 
-	print("Video: ", videoPath)
+	print("MS COCO dataset settings:")
+	print("MS COCO dataset of " + year + " at " + cocoInputPath)
+
+	cocoOutputPath = None
+	if output is not None:
+		cocoOutputPath = os.path.join(output, year) 
+		print("Saving coco result images to " + cocoOutputPath)
+
+	if not os.path.exists(cocoOutputPath):
+		os.makedirs(cocoOutputPath)
+
+	print("\nProcessing COCO datatset:")
+	dataset_val = coco.CocoDataset()
+	cocoDataSet = dataset_val.load_coco(cocoInputPath, year, "val", return_coco=True)
+	dataset_val.prepare()
+	print("Running COCO evaluation on {} images.".format(limit))
+
+	# Redirect output stream to file, unfortunately coco doesn't let us define a file
+	# instead of printing to the console
+	originalStdout = sys.stdout
+	outputFilePath = cocoOutputPath + "/log_" + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M") + ".txt"
+	outputFile = open(outputFilePath, "w")
+	sys.stdout = outputFile
+
+	coco.evaluate_coco(model, dataset_val, cocoDataSet, "bbox", limit=limit, output=cocoOutputPath, classNames=class_names)
+	sys.stdout = originalStdout
+	print("COCO evaluation results in " + outputFilePath)
+	print("\n")
+
+def evaluateVufo(model, videoPath, videoConversionOutput, output, limit):
+	if videoPath is None or not os.path.exists(videoPath):
+		return
+
+	if videoConversionOutput is None:
+		videoConversionOutput = os.path.join(videoPath, "vufo")
+
+
+	print("Video settins:")
+	print("Video at: ", videoPath)
+
+	if not os.path.exists(output):
+		return
 
 	# We want only 30 frames per Video
-	frames = extract.extract_frames(videoPath, output, limit)
+	framesOutputPath = os.path.join(videoConversionOutput, "images")
+	frames = extract.extract_frames(videoPath, framesOutputPath, limit)
+	# We might have extracted less frames than limit
+	limit = len(frames)
 
-	# TODO: extract annotation data from Vatic
-	annotations = []
+	dataset_val = vufo.VufoDataset()
+	vufoAnnotationData = os.path.join(videoPath, os.pardir, "annotations.xml")
+	cocoFormatedAnnotationData = os.path.join(videoConversionOutput, "annotations", "instances.json")
+	dataset_val.transform(vufoAnnotationData, cocoFormatedAnnotationData)
+	vufoDataSet = dataset_val.load_vufo(videoConversionOutput, return_vufo=True)
 
-	#for i in range(len(frames)):
-		#annotations.append({
-		#		"image_id": i,
-        #        "category_id": "car",
-        #        "bbox": [x, y, width, height],
-        #        "score": score})
-	evaluateVideoFrames(model, frames, annotations)
+	# Redirect output stream to file, unfortunately coco doesn't let us define a file
+	# instead of printing to the console
+	originalStdout = sys.stdout
+	outputFilePath = output + "/log_" + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M") + ".txt"
+	outputFile = open(outputFilePath, "w")
+	sys.stdout = outputFile
 
-def evaluateVideoFrames(model, frames, annotations):
-	print("test")
+	coco.evaluate_coco(model, dataset_val, vufoDataSet, "bbox", limit=limit, output=output, classNames=class_names)
+	sys.stdout = originalStdout
+	print("\n")
+	print("COCO evaluation results in " + outputFilePath)
 
 if __name__ == "__main__":
 	import argparse
@@ -102,15 +139,22 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Compare performance of" +
 												 " Mask R-CNN on " +
 												 "MS COCO and videos.")
-	parser.add_argument("--video", 
-						"-v", 
+	parser.add_argument("--videoPath",
+						"-vp", 
 						required=False, 
 						metavar="/path/to/video/video.xyz",
 						help="The path to the video.")
-	parser.add_argument("--videoOutput",
+	parser.add_argument("--videoConversionOutputPath",
+						"-vcop",
+						required=False,
+						metavar="/path/to/video/conversion/output",
+						help="The path where the split video and the annotation data" +
+							 " formatted to COCO style will be saved.")
+	parser.add_argument("--vufoOutputPath",
+						"-vop",
 						required=False,
 						metavar="/path/to/video/output/folder",
-						help="The path where the frames of the video with the bounding" +
+						help="The path where the frames of the vufo video with the bounding" +
 							 " boxes drawn are saved at.")
 	parser.add_argument("--year",
 						"-y",
@@ -118,13 +162,14 @@ if __name__ == "__main__":
 						metavar="2017",
 						help="The year of the MS COCO dataset to be used. This defines" +
 							 "what the annotation files are named like.")
-	parser.add_argument("--coco",
-						"-d",
+	parser.add_argument("--cocoPath",
+						"-cp",
 						required=False,
 						metavar="/path/to/mscoco/dataset",
 						help="The path to the MS COCO dataset. /coco/ and /year/ will" +
 							 " automatically be appended.")
-	parser.add_argument("--cocoOutput",
+	parser.add_argument("--cocoOutputPath",
+						"-cop",
 						required=False,
 						metavar="/path/to/coco/output/folder",
 						help="The path where the frames of the coco images with the bounding" +
@@ -152,6 +197,9 @@ if __name__ == "__main__":
 	model.load_weights("mask_rcnn_coco.h5", by_name=True)
 
 	limit = args.limit if args.limit else 30
+	limit = int(limit)
+	if limit < 0:
+		limit = 0
 
-	evaluateCoco(model, args.coco, args.year, args.cocoOutput, limit)
-	evaluateVideo(model, args.video, args.videoOutput, limit)
+	evaluateCoco(model, args.cocoPath, args.year, args.cocoOutputPath, limit)
+	evaluateVufo(model, args.videoPath, args.videoConversionOutputPath, args.vufoOutputPath, limit)

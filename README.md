@@ -56,6 +56,13 @@ python setup.py install
 
 The code is structure into different modules:
 
+## Modifications to Mask RCNN implementation
+
+The following python files were modified to account for needs in my project:
+
+* visualize.py - added option to leave out masks
+* coco.py - added year option to be able to load COCO datasets of different years
+
 ## Play Around
 
 This code was written to get a first hold on the network implementation. This part consisted of the following classes:
@@ -85,3 +92,6 @@ python compare_coco_vufo_precision.py -v ./assets/input/videos/Video.3gp -videoO
 Here is a collection of what to pay attention to when using the network.
 
 * Input images have to in **.png** format, .jpgs are not accepted, but the error occurs later when the shape of the image is to be accessed.
+* If Mask RCNN is cloned fresh and put in the mrcnn folder, there has to be a change made to modely.py: instead of `import utils` the line needs to be `from mrcnn.utils import utils`
+* matplotlib cannot plot using SSH on the computing machine, since there's not XServer running. To fix this, add this at the top of the file using the matplotlib: `import matplotlib
+matplotlib.use('Agg')`

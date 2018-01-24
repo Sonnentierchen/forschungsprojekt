@@ -5,7 +5,7 @@ def storeImage(image, frameId, frames, outputImagesPath):
 	frames.append({'image' : image,
 			'frameNumber' : frameId})
 	if outputImagesPath:
-		cv2.imwrite(outputImagesPath + "frame%d.jpg" % frameId, image)
+		cv2.imwrite(os.path.join(outputImagesPath, "frame%d.jpg" % frameId), image)
 
 def extract_frames(videoPath, outputImagesPath, maxNumberOfFrames=0, distribute="even"):
 	if not distribute in ["even", "none"]:

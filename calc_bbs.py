@@ -20,8 +20,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 import coco
-import utils
-import model as modellib
+import mrcnn.utils as utils
+import mrcnn.model as modellib
 import visualize
 
 def calc_save_bbs(imagesPath, customBatchSize, saveImagesPath, clearSaveImagesPath):

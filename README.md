@@ -52,6 +52,28 @@ python setup.py install
 * Clone with git: https://github.com/matterport/Mask_RCNN **Mask RCNN's code has to be in the same folder as the python script**
 * Download the weights for the network at https://github.com/matterport/Mask_RCNN/releases and put them in the source folder of Mask RCNN
 
+# Code Structure
+
+The code is structure into different modules:
+
+## Play Around
+
+This code was written to get a first hold on the network implementation. This part consistet of the following classes:
+
+* calc_bbs.py - to run the net on some image examples and visually assess the quality of the bounding boxes
+* extract_frames.py - to extract images form the videos in combination with
+* manual_frame_extraction = which called the function from the file above with specific paths
+
+## Precision Assessment
+
+This code was written to compare the power of the Mask RCNN implementation trained on the MS COCO dataset with the precision on manually
+annotated frames from the VUFO videos.
+
+The following classes play a role in this task:
+
+* compare_coco_vufo_precision.py - to load the MS COCO dataset and use the coco evaluate function on it, as well as on the videos
+* transform_vufo_to_coco_format.py - to transform a given video annotation file into a format that coco evaluate can process
+
 # Notes
 
 Here is a collection of what to pay attention to when using the network.

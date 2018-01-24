@@ -62,7 +62,7 @@ def evaluateCoco(model, dataset, year, output, limit):
 		storeOutput = True
 		print("Saving images to ", output)
 
-	cocoImagesOutputPath = output + "coco/" + year + "/"
+	cocoImagesOutputPath = os.path.join(output, "coco/" + year) 
 
 	if not os.path.exists(cocoImagesOutputPath):
 		os.makedirs(cocoImagesOutputPath)
@@ -106,34 +106,35 @@ if __name__ == "__main__":
 						"-v", 
 						required=False, 
 						metavar="/path/to/video/video.xyz",
-						help="The path to the video")
+						help="The path to the video.")
 	parser.add_argument("--videoOutput",
 						required=False,
 						metavar="/path/to/video/output/folder",
 						help="The path where the frames of the video with the bounding" +
-							 " boxes drawn are saved at")
+							 " boxes drawn are saved at.")
 	parser.add_argument("--year",
 						"-y",
 						required=False,
 						metavar="2017",
 						help="The year of the MS COCO dataset to be used. This defines" +
 							 "what the annotation files are named like.")
-	parser.add_argument("--dataset",
+	parser.add_argument("--coco",
 						"-d",
 						required=False,
 						metavar="/path/to/mscoco/dataset",
-						help="The path to the MS COCO dataset")
+						help="The path to the MS COCO dataset. /coco/ and /year/ will" +
+							 " automatically be appended.")
 	parser.add_argument("--cocoOutput",
 						required=False,
 						metavar="/path/to/coco/output/folder",
 						help="The path where the frames of the coco images with the bounding" +
-							 " boxes drawn are saved at")
+							 " boxes drawn are saved at.")
 	parser.add_argument("--limit",
 						"-l",
 						required=False,
 						metavar="30",
 						help="The maximum number of images to run inference on for COCO and" +
-							 " for the videos")
+							 " for the videos.")
 
 	args = parser.parse_args()
 
@@ -152,5 +153,5 @@ if __name__ == "__main__":
 
 	limit = args.limit if args.limit else 30
 
-	evaluateCoco(model, args.dataset, args.year, args.cocoOutput, limit)
+	evaluateCoco(model, args.coco, args.year, args.cocoOutput, limit)
 	evaluateVideo(model, args.video, args.videoOutput, limit)

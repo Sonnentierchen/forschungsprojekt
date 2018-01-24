@@ -58,11 +58,11 @@ The code is structure into different modules:
 
 ## Play Around
 
-This code was written to get a first hold on the network implementation. This part consistet of the following classes:
+This code was written to get a first hold on the network implementation. This part consisted of the following classes:
 
 * calc_bbs.py - to run the net on some image examples and visually assess the quality of the bounding boxes
 * extract_frames.py - to extract images form the videos in combination with
-* manual_frame_extraction = which called the function from the file above with specific paths
+* manual_frame_extraction.py - which called the function from the file above with specific paths
 
 ## Precision Assessment
 
@@ -73,6 +73,12 @@ The following classes play a role in this task:
 
 * compare_coco_vufo_precision.py - to load the MS COCO dataset and use the coco evaluate function on it, as well as on the videos
 * transform_vufo_to_coco_format.py - to transform a given video annotation file into a format that coco evaluate can process
+
+Example call to compare_coco_vufo_precision.py:
+
+```
+python compare_coco_vufo_precision.py -v ./assets/input/videos/Video.3gp -videoOutput ./assets/output/vufo/ -y 2017 -coco ./assets/input/ --cocoOutput ./assets/output/ --limit 30
+```
 
 # Notes
 

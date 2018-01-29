@@ -1,0 +1,25 @@
+{
+	"Identifier": {
+		fileref:
+		size
+		filename
+		base64_img_data
+		file_attributes {
+		}
+		regions {
+			"0": {
+				shape_attributes: {
+					name
+					x
+					y
+					width
+					height
+				},
+				region_attributes: {
+					class
+					supertype
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,20 @@
+Goal:
+
+* Mask branch cut off [not so important]
+	* Not created on model creation
+	* Weights not loaded
+
+* Model can be used for inference on whole video [important]
+	* Each frame processed
+	* Detection data can be stored in vatic or coco format
+
+* Model retrainable [important]
+	* Analyze how to train specific layers
+	* Analyze how to cut-off the last layer and retrain primarily that one
+		* Find out how to skip loading weights for certain layers
+		* Find out where the last layer is created
+		* Find out how to create one only using certain classes
+	* Groundtruth data in vatic or coco format can be used
+	* Make training possible from command line
+		* For given set of groundtruth data
+		* Provide laerning rate

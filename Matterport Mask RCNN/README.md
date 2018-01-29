@@ -8,6 +8,8 @@ The following is supposed to describe the setup process to be able to run the Ma
 
 ## Setting up the environment
 
+**There is also an Anaconda installation file named install.txt that can be used to install all dependencies with Anaconda**
+
 * Download and install Anaconda (https://conda.io/docs/user-guide/install/download.html)
 * Create a virtual environment with Python 3.5 
 ```

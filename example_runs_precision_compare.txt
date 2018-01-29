@@ -1,5 +1,0 @@
-##### COCO and video:
-  python compare_coco_vufo_precision.py -cp ./assets/input/coco/ -y 2017 -cop ./assets/output/coco/ -vp ./assets/input/videos/Video1.3gp -vcop ./assets/input/vufo/ -vop ./assets/output/vufo/  --limit 5
-
-##### Only video:
-  python compare_coco_vufo_precision.py -vp ./assets/input/videos/Video1.3gp -vcop ./assets/input/vufo/ -vop ./assets/output/vufo/  --limit 5

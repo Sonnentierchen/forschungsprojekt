@@ -46,3 +46,34 @@ def extract_frames(videoPath, outputImagesPath, maxNumberOfFrames=0, distribute=
 		frameId += 1
 
 	return frames
+
+if __name__ == "__main__":
+	import argparse
+
+	parser = argparse.ArgumentParser(description="Extract frames from video file.")
+	parser.add_argument("--videoPath",
+						"-vp", 
+						required=True, 
+						metavar="/path/to/video/video.xyz",
+						help="The path to the video.")
+	parser.add_argument("--outputPath",
+						"-op",
+						required=True,
+						metavar="/path/to/video/conversion/output",
+						help="The path where the split video and the annotation data" +
+							 " formatted to COCO style will be saved.")
+	parser.add_argument("--maxNumberOfFrames",
+						"-n",
+						required=True,
+						default=100,
+						help="The maximum number of frames to be extracted.")
+	parser.add_argument("--distribute",
+						"-d",
+						required=True,
+						default="even",
+						metavar="[even|none]",
+						help="Sets whether the frames are to be taken from the beginning" +
+						"of the video or at even intervalls.")
+
+	args = parser.parse_args()
+	extract_frames(args.videoPath, args.outputPath, args.maxNumberOfFrames, args.distribute)

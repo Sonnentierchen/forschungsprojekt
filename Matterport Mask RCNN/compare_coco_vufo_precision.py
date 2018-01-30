@@ -14,6 +14,7 @@ from pycocotools import mask as maskUtils
 import coco
 # The adaption of the coco helper class to the VUFO videos
 import vufo
+import vatic
 
 from mrcnn.config import Config
 from mrcnn import utils
@@ -120,7 +121,7 @@ def evaluateVufo(model, videoPath, videoConversionOutput, output, limit):
 	# we need to strip the filename off
 	vufoAnnotationData = os.path.join(os.path.dirname(videoPath), "annotations.json")
 	cocoFormatedAnnotationData = os.path.join(videoConversionOutput, "annotations", "instances.json")
-	dataset_val.transform(vufoAnnotationData, cocoFormatedAnnotationData)
+	vatic.transform(vufoAnnotationData, cocoFormatedAnnotationData)
 	vufoDataSet = dataset_val.load_vufo(videoConversionOutput, return_vufo=True)
 
 	# Redirect output stream to file, unfortunately coco doesn't let us define a file

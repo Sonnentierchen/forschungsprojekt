@@ -1,3 +1,5 @@
-COCO 2014 Val 5 Images: python ./Matterport\ Mask\ RCNN/evaluation.py -w ./Matterport\ Mask\ RCNN/mask_rcnn_coco.h5 -i ./assets/input/coco/2014/images/ -g ./assets/input/coco/2014/annotations/instances_minival2014.json -o ./assets/output/coco/2014/ -l 5
+COCO 2014 Val 5 Images: python ./Matterport\ Mask\ RCNN/evaluation.py -w ./Matterport\ Mask\ RCNN/weights/mask_rcnn_coco_2017_nov.h5 -i ./assets/input/coco/2014/images/ -g ./assets/input/coco/2014/annotations/instances_minival2014.json -o ./assets/output/2018.02.08/evaluation/coco/ -l 5
 
-VIA All Images: python ./Matterport\ Mask\ RCNN/evaluation.py -w ./Matterport\ Mask\ RCNN/mask_rcnn_coco.h5 -i ./assets/input/vufo/images/ -g ./assets/input/vufo/annotations/instances.json -o ./assets/output/vufo/run_2018_02_02_18_27/ -l 0
+VIA All Images [WITH CONVERTED ANNOTATIONS]: python ./Matterport\ Mask\ RCNN/evaluation.py -w ./Matterport\ Mask\ RCNN/weights/mask_rcnn_coco_2017_nov.h5 -i ./assets/input/vufo/video1_video2_16_frames/images/ -g ./assets/input/vufo/video1_video2_16_frames/annotations/instances_via_converted.json -o ./assets/output/evaluation/2018.02.09/vufo/ -l 0
+
+VIA All Images [WIHTOUT CONVERTED ANNOTATIONS]: 

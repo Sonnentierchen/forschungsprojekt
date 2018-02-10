@@ -15,6 +15,7 @@ import sys
 import random
 import math
 import json
+import datetime
 import numpy as np
 import skimage.io
 import matplotlib
@@ -52,6 +53,13 @@ def inference(modelWeightsPath, imagesPath, limit, outputPath, storeImages=False
 
     if numberOfImages == 0:
         return []
+
+    if limit == 0:
+        limit = numberOfImages
+
+    today = datetime.datetime.now()
+    todayString = "{}.{:02}.{:02}".format(today.year , today.month, today.day)
+    outputPath = os.path.join(outputPath, todayString)
 
     imagesOutputPath = os.path.join(outputPath, "images")
     if not os.path.exists(imagesOutputPath):
@@ -95,6 +103,14 @@ def inference(modelWeightsPath, imagesPath, limit, outputPath, storeImages=False
                                 class_names, result['scores'])
             plt.savefig(os.path.join(imagesOutputPath, imageFileNames[i] + "_out.png"))
 
+    annotationsOutputPath = os.path.join(outputPath, "annotations")
+
+    if not os.path.exists(annotationsOutputPath):
+        os.makedirs(annotationsOutputPath)
+
+    with open(os.path.join(annotationsOutputPath, "instances.json"), "w") as jsonFile:
+        json.dump(conversion.mrcnn_instance_detections_to_coco_format(accumulatedResults), jsonFile)
+
     return accumulatedResults
 
 if __name__ == '__main__':
@@ -131,13 +147,7 @@ if __name__ == '__main__':
         args.limit = int(args.limit)
         if args.limit < 0:
             args.limit = 0
+    else:
+        args.limit = 0
 
-    results = inference(args.modelWeightsPath, args.imagesPath, args.limit, args.outputPath, args.storeImages)
-
-    annotationsOutputPath = os.path.join(args.outputPath, "annotations")
-
-    if not os.path.exists(annotationsOutputPath):
-        os.makedirs(annotationsOutputPath)
-
-    with open(os.path.join(annotationsOutputPath, "instances.json"), "w") as jsonFile:
-        json.dump(conversion.mrcnn_instance_detections_to_coco_format(results), jsonFile)
+    inference(args.modelWeightsPath, args.imagesPath, args.limit, args.outputPath, args.storeImages)

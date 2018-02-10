@@ -14,6 +14,8 @@ from mrcnn.config import Config
 from mrcnn import utils
 import mrcnn.model as modellib
 
+import misc
+
 class EvaluationConfig(Config):
     """Configuration for evaluation on MS COCO.
     Derives from the base Config class and overrides values specific
@@ -79,6 +81,26 @@ class EvaluationDataset(coco.CocoDataset):
 
 def evaluate(weightsPath, imagesPath, groundTruthAnnotationsPath, outputPath, outputModelPath, limit):
 
+    if not os.path.exists(weightsPath):
+        raise ValueError("The path to the pre-trained weights does not exist.")
+
+    if not os.path.exists(imagesPath):
+        raise ValueError("The path to the images does not exist.")
+
+    if not os.path.exists(groundTruthAnnotationsPath):
+        raise ValueError("The path to the groundtruth annotation files does not exist.")
+
+    today = datetime.datetime.now()
+    todayString = "{}.{:02}.{:02}".format(today.year, today.month, today.day)
+
+    outputPath = os.path.join(outputPath, todayString)
+    if not os.path.exists(outputPath):
+        os.makedirs(outputPath)
+
+    outputModelPath = os.path.join(outputModelPath, todayString)
+    if not os.path.exists(outputModelPath):
+        os.makedirs(outputModelPath)
+
     config = EvaluationConfig()
     config.display()
 
@@ -100,10 +122,10 @@ def evaluate(weightsPath, imagesPath, groundTruthAnnotationsPath, outputPath, ou
     # COCO only prints to console but we want to store logs
     originalStdout = sys.stdout
     outputFilePath = os.path.join(outputPath, "log_" + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt")
-    outputFile = open(outputFilePath, "w")
-    sys.stdout = outputFile
-
-    coco.evaluate_coco(model, dataset, dataset_data, "bbox", limit=limit, output=outputModelPath, classNames=coco.COCO_CLASSES)
+    
+    with open(outputFilePath, "w") as outputFile:
+        sys.stdout = outputFile
+        coco.evaluate_coco(model, dataset, dataset_data, "bbox", limit=limit)
 
     sys.stdout = originalStdout
 

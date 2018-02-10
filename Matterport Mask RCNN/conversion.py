@@ -158,8 +158,10 @@ def coco_detections_to_evaluation_format(imagesPath, annotationsPath):
             # Here we process an entry for one bounding box
             image_id = entryData["image_id"]
             bbox = entryData["bbox"]
+            bb_width = int(bbox[2]) - int(bbox[0])
+            bb_height = int(bbox[3]) - int(bbox[1])
             cocoData["annotations"].append({"segmentation" : [[[]]],
-                                            "area" : "0",
+                                            "area" : bb_width * bb_height,
                                             "iscrowd" : "0",
                                             "image_id" : image_id,
                                             "bbox" : [int(bbox[0]),
@@ -222,7 +224,7 @@ def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
                 # Process region values
                 shapeAttributes = region["shape_attributes"]
                 cocoData["annotations"].append({"segmentation" : [[]],
-                                                "area" : 0,
+                                                "area" : shapeAttributes["width"] * shapeAttributes["height"],
                                                 "iscrowd" : 0,
                                                 "image_id" : imageIndex,
                                                 "bbox" : [int(shapeAttributes["x"]),

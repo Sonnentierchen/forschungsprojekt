@@ -15,69 +15,7 @@ from mrcnn import utils
 import mrcnn.model as modellib
 
 import misc
-
-class EvaluationConfig(Config):
-    """Configuration for evaluation on MS COCO.
-    Derives from the base Config class and overrides values specific
-    to the COCO dataset.
-    """
-    # Give the configuration a recognizable name
-    NAME = "coco"
-
-    # We use a GPU with 12GB memory, which can fit two images.
-    # Adjust down if you use a smaller GPU.
-    IMAGES_PER_GPU = 1
-
-    # Uncomment to train on 8 GPUs (default is 1)
-    # GPU_COUNT = 8
-
-    # Number of classes (including background)
-    NUM_CLASSES = 1 + 80  # COCO has 80 classes
-
-    GPU_COUNT = 1
-
-class EvaluationDataset(coco.CocoDataset):
-    def load_coco(self, imagesPath, groundTruthAnnotationsPath, year=None, subset=None, class_ids=None,
-                  class_map=None, return_coco=True):
-        # Override method to provide own loading of data
-        # Thus we can omit year and do not need to concatenate paths as
-        # dataset_dir is the actual dataset file already
-
-        if not os.path.exists(groundTruthAnnotationsPath):
-            raise ValueError("Annotations file does not exist.")
-
-        coco = COCO(groundTruthAnnotationsPath)
-
-        # Load all classes or a subset?
-        if not class_ids:
-        # All classes
-            class_ids = sorted(coco.getCatIds())
-
-        # All images or a subset?
-        if class_ids:
-            image_ids = []
-        for id in class_ids:
-            image_ids.extend(list(coco.getImgIds(catIds=[id])))
-            # Remove duplicates
-            image_ids = list(set(image_ids))
-        else:
-            # All images
-            image_ids = list(coco.imgs.keys())
-
-        # Add classes
-        for i in class_ids:
-            self.add_class("coco", i, coco.loadCats(i)[0]["name"])
-
-        # Add images
-        for i in image_ids:
-            self.add_image(
-            "coco", image_id=i,
-            path=os.path.join(imagesPath, coco.imgs[i]['file_name']),
-            width=coco.imgs[i]["width"],
-            height=coco.imgs[i]["height"],
-            annotations=coco.loadAnns(coco.getAnnIds(imgIds=[i], catIds=class_ids, iscrowd=False)))
-        if return_coco:
-            return coco
+import dataset
 
 def evaluate(weightsPath, imagesPath, groundTruthAnnotationsPath, outputPath, outputModelPath, limit):
 
@@ -101,7 +39,7 @@ def evaluate(weightsPath, imagesPath, groundTruthAnnotationsPath, outputPath, ou
     if not os.path.exists(outputModelPath):
         os.makedirs(outputModelPath)
 
-    config = EvaluationConfig()
+    config = dataset.Config()
     config.display()
 
     # Create model object in inference mode.
@@ -110,7 +48,7 @@ def evaluate(weightsPath, imagesPath, groundTruthAnnotationsPath, outputPath, ou
     # Load weights trained on MS-COCO
     print("Loading weights...")
     model.load_weights(weightsPath, by_name=True)
-    dataset = EvaluationDataset()
+    dataset = dataset.Dataset()
     # We do not need to provide whether we want val or train as dataset (we only use the via data) and
     # no year
     dataset_data = dataset.load_coco(imagesPath, groundTruthAnnotationsPath, return_coco=True)
@@ -122,7 +60,7 @@ def evaluate(weightsPath, imagesPath, groundTruthAnnotationsPath, outputPath, ou
     # COCO only prints to console but we want to store logs
     originalStdout = sys.stdout
     outputFilePath = os.path.join(outputPath, "log_" + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt")
-    
+
     with open(outputFilePath, "w") as outputFile:
         sys.stdout = outputFile
         coco.evaluate_coco(model, dataset, dataset_data, "bbox", limit=limit)

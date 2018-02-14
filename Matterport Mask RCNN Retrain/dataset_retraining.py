@@ -20,7 +20,7 @@ class Config(config.Config):
     # GPU_COUNT = 8
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 80  # COCO has 80 classes
+    NUM_CLASSES = 1 + 8  # VUFO has 8 classes
 
     GPU_COUNT = 1
 
@@ -44,10 +44,10 @@ class Dataset(coco.CocoDataset):
         # All images or a subset?
         if class_ids:
             image_ids = []
-        for id in class_ids:
-            image_ids.extend(list(coco.getImgIds(catIds=[id])))
-            # Remove duplicates
-            image_ids = list(set(image_ids))
+            for id in class_ids:
+                image_ids.extend(list(coco.getImgIds(catIds=[id])))
+                # Remove duplicates
+                image_ids = list(set(image_ids))
         else:
             # All images
             image_ids = list(coco.imgs.keys())

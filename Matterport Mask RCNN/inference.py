@@ -151,7 +151,7 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
         json.dump(conversion.mrcnn_instance_detections_to_coco_format(accumulatedResults), jsonFile)
 
     with open(os.path.join(outputPath, "log.txt"), "w") as logFile:
-        logFile.write("Inference run with the following parameters:\n\n")
+        logFile.write("Running inference with the following parameters:\n\n")
         logFile.write("Weights at: " + modelWeightsPath)
         logFile.write("Run on {} of {} images at: {}".format(limit, numberOfImages, imagesPath))
         logFile.write("Results stored at {}".format(outputPath))

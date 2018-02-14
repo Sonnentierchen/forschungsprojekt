@@ -108,7 +108,7 @@ def mrcnn_instance_detections_to_coco_format(data):
                 })
 
     return cocoData
-    
+
 def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
     """
     Loads the VUFO data file at the given location, extracts the information

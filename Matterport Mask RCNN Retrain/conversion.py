@@ -109,70 +109,6 @@ def mrcnn_instance_detections_to_coco_format(data):
 
     return cocoData
 
-def coco_detections_to_evaluation_format(imagesPath, annotationsPath):
-    """
-    Converts the annotations file at the specified location into the style of COCO groundtruth annotations. 
-    imagesPath: the path to the images that detection was run on and produced the annotations file
-    annotationsPath: the path to the annotations file that is to be converted
-    """
-    if not os.path.exists(imagesPath) or not os.path.exists(annotationsPath):
-        return {}
-
-    # Prepare the return dict - coco does not store a list as root but a dict
-    cocoData = {}
-    # Description for the data
-    cocoData["info"] = {"description" : "Frames",
-                        "url" : "",
-                        "version" : "1.0",
-                        "year" : "2018",
-                        "contributor" : "",
-                        "date_created" : ""}
-    # Add a default license for all images
-    cocoData["licenses"] = [{"url" : "",
-                            "id" : "1",
-                            "name" : "license"}]
-    cocoData["images"] = []
-    cocoData["annotations"] = []
-    cocoData["categories"] = COCO_CATEGORIES
-
-    imageIndex = 0
-    annotationIndex = 0
-
-    images = os.listdir(imagesPath)
-    for i in range(0, len(images)):
-        image = cv2.imread(os.path.join(imagesPath, images[i]))
-        width, height, channels = image.shape
-        cocoData["images"].append({"license" : "1",
-                        "file_name" : images[i],
-                        "coco_url" : "",
-                        "height" : height,
-                        "width" : width,
-                        "date_captured" : "",
-                        "flickr_url" : "",
-                        "id" : i})
-
-    with open(annotationsPath) as annotationData:
-        data = json.load(annotationData)
-        for i in range(0, data):
-            entry = data[i]
-            # Here we process an entry for one bounding box
-            image_id = entryData["image_id"]
-            bbox = entryData["bbox"]
-            bb_width = int(bbox[2]) - int(bbox[0])
-            bb_height = int(bbox[3]) - int(bbox[1])
-            cocoData["annotations"].append({"segmentation" : [[[]]],
-                                            "area" : bb_width * bb_height,
-                                            "iscrowd" : "0",
-                                            "image_id" : image_id,
-                                            "bbox" : [int(bbox[0]),
-                                                      int(bbox[1]),
-                                                      int(bbox[2]),
-                                                      int(bbox[3])],
-                                            "category_id" : entryData["category_id"],
-                                            "id" : i})
-    
-    return cocoData
-
 def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
     """
     Loads the VUFO data file at the given location, extracts the information
@@ -223,12 +159,17 @@ def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
                 category = next((_category for _category in COCO_CATEGORIES if _category["name"] == coco_class_name), None)
                 # Process region values
                 shapeAttributes = region["shape_attributes"]
+                x = int(shapeAttributes["x"])
+                y = int(shapeAttributes["y"])
+                # VIA data can be negative numbers
+                x = x if x >= 0 else 0
+                y = y if y >= 0 else 0
                 cocoData["annotations"].append({"segmentation" : [[]],
                                                 "area" : shapeAttributes["width"] * shapeAttributes["height"],
                                                 "iscrowd" : 0,
                                                 "image_id" : imageIndex,
-                                                "bbox" : [int(shapeAttributes["x"]),
-                                                          int(shapeAttributes["y"]),
+                                                "bbox" : [x,
+                                                          y,
                                                           int(shapeAttributes["width"]),
                                                           int(shapeAttributes["height"])],
                                                 "category_id" : category["id"],
@@ -238,3 +179,29 @@ def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
             imageIndex += 1
     
     return cocoData
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Perform inference on a set of images with pre-defined weights.")
+    parser.add_argument("--imagesPath",
+                        "-i", 
+                        required=True, 
+                        metavar="/path/to/images",
+                        help="The path to the images.")
+    parser.add_argument("--annotationsPath",
+                        "-a",
+                        required=True,
+                        metavar="/path/to/annoations/",
+                        help="The path to the annoations that are to be converted.")
+
+    args = parser.parse_args()
+    assert os.path.exists(args.imagesPath)
+    assert os.path.exists(args.annotationsPath)
+
+    result = via_data_to_coco_evaluation_format(args.imagesPath, args.annotationsPath)
+
+    annotationsFileName = os.path.splitext(args.annotationsPath)[0]
+    convertedPath = annotationsFileName + "_converted.json"
+    with open(convertedPath, "w") as jsonFile:
+        json.dump(result, jsonFile)

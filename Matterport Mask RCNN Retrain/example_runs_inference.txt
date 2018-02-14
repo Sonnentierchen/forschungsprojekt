@@ -1,0 +1,3 @@
+# Run on first 10 COCO 2014 images with the updated weights from Nov 2017:
+
+python ./Matterport\ Mask\ RCNN/inference.py -w ./Matterport\ Mask\ RCNN/weights/mask_rcnn_coco_2017_nov.h5 -i ./assets/input/coco/2014/images -o ./assets/output/2018.02.08/coco/2014 -s True -l 10

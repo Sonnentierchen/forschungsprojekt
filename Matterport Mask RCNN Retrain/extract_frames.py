@@ -13,8 +13,6 @@ def extract_frames(videoPath, outputImagesPath, maxNumberOfFrames=0, distribute=
 	if not distribute in ["even", "none"]:
 		raise ValueError("Distribute needs to be either even or none.")
 
-	assert os.path.exists(videoPath)
-
 	videocap = cv2.VideoCapture(videoPath)
 	if not videocap.isOpened():
 		return []
@@ -24,7 +22,8 @@ def extract_frames(videoPath, outputImagesPath, maxNumberOfFrames=0, distribute=
 	length = int(videocap.get(cv2.CAP_PROP_FRAME_COUNT))
 
 	# The user might not know that he has provided a number higher than the max. number of frames
-	maxNumberOfFrames = min(maxNumberOfFrames, length)
+	if not maxNumberOfFrames < length:
+		maxNumberOfFrames = length
 
 	distribution = length if maxNumberOfFrames == 0 else maxNumberOfFrames
 	# If user sets number to 0 they want all frames

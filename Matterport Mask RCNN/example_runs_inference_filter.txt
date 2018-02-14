@@ -1,0 +1,7 @@
+# Running on a small frameset with unnecessary classes filtered out, only 10 images, store the images with the drawn bounding boxes
+
+python ./Matterport\ Mask\ RCNN/inference_filter.py -w ./assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -i ./assets/input/vufo/single_frames/frameset1/images/ -o ./assets/output/inference/vufo/frameset/ -l 10 -s True
+
+# Inference run on a VUFO video:
+
+python ./Matterport\ Mask\ RCNN/inference_filter.py -w ./assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -v ./assets/input/vufo/videos/video26.3gp -o ./assets/output/inference/vufo/video26/ -l 0 -s True

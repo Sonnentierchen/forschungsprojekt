@@ -45,7 +45,7 @@ class InferenceConfig(coco.CocoConfig):
 def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=False):
     videoFolder = os.path.dirname(videoPath)
     videoName = os.path.basename(videoPath)
-    videoFramesFolder = os.path.join(videoFolder, videoName.lower(), "extracted_frames")
+    videoFramesFolder = os.path.join(videoFolder, videoName.lower() + "_extracted_frames")
     if os.path.exists(videoFramesFolder):
         shutil.rmtree(videoFramesFolder)
     os.makedirs(videoFramesFolder)
@@ -66,7 +66,7 @@ def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=
 
     img = cv2.imread(os.path.join(detectedFramesPath, imageFileNames[0]))
     height , width , layers =  img.shape
-    video = cv2.VideoWriter(os.path.join(outputPath, 'video.avi'),cv2.VideoWriter_fourcc('M','J','P','G'),24,(width,height))
+    video = cv2.VideoWriter(os.path.join(inferenceOutputPath, 'video.avi'),cv2.VideoWriter_fourcc('M','J','P','G'),24,(width,height))
 
     for i in range(0, numberOfImages):
         currentImagePath = os.path.join(detectedFramesPath, imageFileNames[i])
@@ -79,6 +79,7 @@ def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=
 def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImages=False):
     """
     This method loads the .h5 weights and performs inference on all the images at the specified path.
+    At the end, the classes irrelevant for VUFO will be filtered out.
     modelWeightsPath: the path to the .h5 weights
     imagesPath: the path to the images to perform inference on
     outputPath: the path where the results are to be output to, the file will be named instances.json
@@ -127,10 +128,34 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
         if imageCount >= limit:
             break
 
+    # Build our index filter to block all COCO classes that we don't want
+    class_filter = []
+    for class_name in misc.VUFO_CLASSES:
+        class_filter.append(misc.COCO_CLASSES.index(class_name))
+
     accumulatedResults = []
     for i in range(0, min(len(images), limit)):
         result = model.detect([images[i]], verbose=1)
         result = result[0]
+
+        # Filter out non-VUFO classes
+        filteredResult = {}
+        filteredResult['rois'] = []
+        filteredResult['class_ids'] = []
+        filteredResult['scores'] = []
+        for index in range(0, len(result['class_ids'])):
+            class_id = result['class_ids'][index]
+            if class_id in class_filter:
+                # The name of the COCO class is also in the VUFO classes, i.e. add the bounding box
+                filteredResult['rois'].append(np.array(result['rois'][index][0:4]))
+                filteredResult['class_ids'].append(result['class_ids'][index])
+                filteredResult['scores'].append(result['scores'][index])
+
+        filteredResult['rois'] = np.array(filteredResult['rois'])
+        filteredResult['class_ids'] = np.array(filteredResult['class_ids'])
+        filteredResult['scores'] = np.array(filteredResult['scores'])
+        result = filteredResult
+
         # Add the filename of the image to be able to convert it to COCO format
         result["image_id"] = i
         accumulatedResults.append(result)
@@ -152,9 +177,10 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
 
     with open(os.path.join(outputPath, "log.txt"), "w") as logFile:
         logFile.write("Inference run with the following parameters:\n\n")
-        logFile.write("Weights at: " + modelWeightsPath)
-        logFile.write("Run on {} of {} images at: {}".format(limit, numberOfImages, imagesPath))
-        logFile.write("Results stored at {}".format(outputPath))
+        logFile.write("Weights at: " + modelWeightsPath + "\n")
+        logFile.write("Run on {} of {} images at: {}\n".format(limit, numberOfImages, imagesPath))
+        logFile.write("Results stored at {}\n".format(outputPath))
+        logFile.write("Results filtered by VUFO classes.")
 
     return accumulatedResults, outputPath
 

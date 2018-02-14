@@ -1,0 +1,1 @@
+1. The videos appear to have some corrupt frames. This manifests by crashing inference on a whole video on a certain frame. In this case, re-run inference and set the limit to the frame before the faulty frame.

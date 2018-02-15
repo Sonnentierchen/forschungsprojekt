@@ -41,11 +41,12 @@ class InferenceConfig(coco.CocoConfig):
     # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
+    NUM_CLASSES = 1 + 8 # VUFO has 8 classes + background
 
 def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=False):
     videoFolder = os.path.dirname(videoPath)
     videoName = os.path.basename(videoPath)
-    videoFramesFolder = os.path.join(videoFolder, videoName.lower(), "extracted_frames")
+    videoFramesFolder = os.path.join(videoFolder, videoName.lower() + "_extracted_frames")
     if os.path.exists(videoFramesFolder):
         shutil.rmtree(videoFramesFolder)
     os.makedirs(videoFramesFolder)
@@ -67,6 +68,8 @@ def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=
     img = cv2.imread(os.path.join(detectedFramesPath, imageFileNames[0]))
     height , width , layers =  img.shape
     video = cv2.VideoWriter(os.path.join(inferenceOutputPath, 'video.avi'),cv2.VideoWriter_fourcc('M','J','P','G'),24,(width,height))
+
+    print("Writing video at: {}".format(os.path.join(inferenceOutputPath, "video.avi")))
 
     for i in range(0, numberOfImages):
         currentImagePath = os.path.join(detectedFramesPath, imageFileNames[i])

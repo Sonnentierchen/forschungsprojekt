@@ -164,14 +164,18 @@ def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
                 # VIA data can be negative numbers
                 x = x if x >= 0 else 0
                 y = y if y >= 0 else 0
-                cocoData["annotations"].append({"segmentation" : [[]],
+                width = int(shapeAttributes["width"])
+                height = int(shapeAttributes["height"])
+                # Hack, because the network expects masks we give it a mask in the form of the bounding box -> not problematic
+                # since we stop the gradient with Kl.stop_gradient in the mask network head
+                cocoData["annotations"].append({"segmentation" : [[x, y, x + width, y, x + width, y + width, x, y + width]],
                                                 "area" : shapeAttributes["width"] * shapeAttributes["height"],
                                                 "iscrowd" : 0,
                                                 "image_id" : imageIndex,
                                                 "bbox" : [x,
                                                           y,
-                                                          int(shapeAttributes["width"]),
-                                                          int(shapeAttributes["height"])],
+                                                          width,
+                                                          height],
                                                 "category_id" : category["id"],
                                                 "id" : annotationIndex})
                 annotationIndex += 1

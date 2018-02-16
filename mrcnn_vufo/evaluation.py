@@ -15,6 +15,7 @@ from mrcnn import utils
 import mrcnn.model as modellib
 
 import misc
+# Our dataset with the reduced 9 classes instead of the 81 COCO classes
 import dataset_retraining as dataset
 
 def evaluate(weightsPath, imagesPaths, groundTruthPaths, outputPath, outputModelPath, limit):

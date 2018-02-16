@@ -4,6 +4,10 @@ from mrcnn import model
 
 import datetime
 
+def log(text, logFile):
+    logFile.write(text)
+    print(text)
+
 if __name__ == '__main__':
     import argparse
 
@@ -101,8 +105,11 @@ if __name__ == '__main__':
     config = dataset.Config()
     model = model.MaskRCNN(mode="training", config=config, model_dir=logs)
 
-    print("Loading weights ", weights)
+    log_file = open(os.path.join(logs, "log.txt"), "w")
+
+    log("Startin from weights at: " + weights, log_file + "\n")
     exclude = [] if not args.excludeWeightsOfLayers else args.excludeWeightsOfLayers
+    log("Excluding layers {} from weight loading to fully retrain them.\n".format(exclude), log_file)
     model.load_weights(weights, by_name=True, exclude=exclude)
 
     dataset_train = dataset.Dataset()
@@ -127,14 +134,14 @@ if __name__ == '__main__':
     dataset_val.prepare()
 
     for run in range(runs):
-        print("Performing training run {} of {}.".format(run + 1, runs))
+        log("Performing RE-training run {} of {}\n.".format(run + 1, runs), log_file)
         currentLayers = layers[run]
         currentLearningRate = learningRates[run]
         currentEpochs = epochs[run]
-        print("Training layers {} with learning rate {} for {} epochs".format(
+        log("Training layers {} with learning rate {} for {} epochs\n.".format(
             currentLayers,
             currentLearningRate,
-            currentEpochs))
+            currentEpochs), log_file)
         model.train(dataset_train, dataset_val,
                 learning_rate=currentLearningRate,
                 epochs=currentEpochs,

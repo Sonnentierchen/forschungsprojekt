@@ -157,6 +157,10 @@ def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
                 regionAttributes = region["region_attributes"]
                 coco_class_name = regionAttributes["class"]
                 category = next((_category for _category in COCO_CATEGORIES if _category["name"] == coco_class_name), None)
+
+                if not category:
+                  raise ValueError("A specified category was not found in the COCO categories. Please make sure to just use COCO categories.")
+
                 # Process region values
                 shapeAttributes = region["shape_attributes"]
                 x = int(shapeAttributes["x"])

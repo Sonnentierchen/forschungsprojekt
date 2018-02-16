@@ -29,23 +29,17 @@ import visualize
 import conversion
 import misc
 import extract_frames
+import dataset_retraining as dataset
 
 # COCO Class names
 # Index of the class in the list is its ID. For example, to get ID of
 # the teddy bear class, use: class_names.index('teddy bear')
 class_names = misc.COCO_CLASSES
 
-
-class InferenceConfig(coco.CocoConfig):
-    # Set batch size to 1 since we'll be running inference on
-    # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
-
 def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=False):
     videoFolder = os.path.dirname(videoPath)
     videoName = os.path.basename(videoPath)
-    videoFramesFolder = os.path.join(videoFolder, videoName.lower(), "extracted_frames")
+    videoFramesFolder = os.path.join(videoFolder, videoName.lower() + "_extracted_frames")
     if os.path.exists(videoFramesFolder):
         shutil.rmtree(videoFramesFolder)
     os.makedirs(videoFramesFolder)
@@ -54,7 +48,7 @@ def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=
 
     results, inferenceOutputPath = images_inference(modelWeightsPath, videoFramesFolder, limit, outputPath, storeImages)
 
-    #shutil.rmtree(videoFramesFolder)
+    shutil.rmtree(videoFramesFolder)
 
     # Get the folder of the images with the detections drawn into them and assemble video
     detectedFramesPath = os.path.join(inferenceOutputPath, "images")
@@ -66,7 +60,7 @@ def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=
 
     img = cv2.imread(os.path.join(detectedFramesPath, imageFileNames[0]))
     height , width , layers =  img.shape
-    video = cv2.VideoWriter(os.path.join(outputPath, 'video.avi'),cv2.VideoWriter_fourcc('M','J','P','G'),24,(width,height))
+    video = cv2.VideoWriter(os.path.join(inferenceOutputPath, 'video.avi'),cv2.VideoWriter_fourcc('M','J','P','G'),24,(width,height))
 
     for i in range(0, numberOfImages):
         currentImagePath = os.path.join(detectedFramesPath, imageFileNames[i])
@@ -107,7 +101,7 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
     # Root directory of the project
     ROOT_DIR = os.getcwd()
 
-    config = InferenceConfig()
+    config = dataset.Config()
     config.display()
 
     # Create model object in inference mode.
@@ -152,9 +146,9 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
 
     with open(os.path.join(outputPath, "log.txt"), "w") as logFile:
         logFile.write("Inference run with the following parameters:\n\n")
-        logFile.write("Weights at: " + modelWeightsPath)
-        logFile.write("Run on {} of {} images at: {}".format(limit, numberOfImages, imagesPath))
-        logFile.write("Results stored at {}".format(outputPath))
+        logFile.write("Weights at: " + modelWeightsPath + "\n")
+        logFile.write("Run on {} of {} images at: {}\n".format(limit, numberOfImages, imagesPath))
+        logFile.write("Results stored at {}\n".format(outputPath))
 
     return accumulatedResults, outputPath
 

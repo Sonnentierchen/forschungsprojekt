@@ -46,9 +46,7 @@ def adjust_weights(weightsPath, weightsOutputPath):
 					elif layer == "mrcnn_mask":
 						newBias = nestedLayerData["bias:0"][:numVufoClasses]
 						# Kernel dimension of mask layer is 1 x 1 x 256 x 81
-						newKernel = []
-						newKernel.append([])
-						newKernel[0][0] = nestedLayerData["kernel:0"][:][:][:]
+						newKernel = nestedLayerData["kernel:0"][:][:][:][:numVufoClasses]
 						print(newKernel.shape[3])
 
 					group.create_dataset("bias:0", data=newBias)

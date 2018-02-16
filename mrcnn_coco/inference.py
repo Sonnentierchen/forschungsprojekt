@@ -152,9 +152,9 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
 
     with open(os.path.join(outputPath, "log.txt"), "w") as logFile:
         logFile.write("Running inference with the following parameters:\n\n")
-        logFile.write("Weights at: " + modelWeightsPath)
-        logFile.write("Run on {} of {} images at: {}".format(limit, numberOfImages, imagesPath))
-        logFile.write("Results stored at {}".format(outputPath))
+        logFile.write("Weights at: " + modelWeightsPath + "\n")
+        logFile.write("Run on {} of {} images at: {}\n".format(limit, numberOfImages, imagesPath))
+        logFile.write("Results stored at {}\n".format(outputPath))
 
     return accumulatedResults, outputPath
 

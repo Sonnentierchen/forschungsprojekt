@@ -107,10 +107,12 @@ if __name__ == '__main__':
 
     log_file = open(os.path.join(logs, "log.txt"), "w")
 
-    log("Startin from weights at: " + weights, log_file + "\n")
-    exclude = [] if not args.excludeWeightsOfLayers else args.excludeWeightsOfLayers
-    log("Excluding layers {} from weight loading to fully retrain them.\n".format(exclude), log_file)
-    model.load_weights(weights, by_name=True, exclude=exclude)
+    log("Startin from weights at: " + weights + "\n", log_file)
+    if args.excludeWeightsOfLayers:
+        log("Excluding layers {} from weight loading to fully retrain them.\n".format(exclude), log_file)
+        model.load_weights(weights, by_name=True, exclude=args.excludeWeightsOfLayers)
+    else:
+        model.load_weights(weights, by_name=True)
 
     dataset_train = dataset.Dataset()
     for index in range(len(trainImagesPaths)):
@@ -134,11 +136,11 @@ if __name__ == '__main__':
     dataset_val.prepare()
 
     for run in range(runs):
-        log("Performing RE-training run {} of {}\n.".format(run + 1, runs), log_file)
+        log("Performing RE-training run {} of {}.\n".format(run + 1, runs), log_file)
         currentLayers = layers[run]
         currentLearningRate = learningRates[run]
         currentEpochs = epochs[run]
-        log("Training layers {} with learning rate {} for {} epochs\n.".format(
+        log("Training layers {} with learning rate {} for {} epochs.\n".format(
             currentLayers,
             currentLearningRate,
             currentEpochs), log_file)

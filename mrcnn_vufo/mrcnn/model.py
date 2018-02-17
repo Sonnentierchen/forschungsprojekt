@@ -908,8 +908,6 @@ def build_fpn_mask_graph(rois, feature_maps,
     x = PyramidROIAlign([pool_size, pool_size], image_shape,
                         name="roi_align_mask")([rois] + feature_maps)
 
-    x = KL.Lambda(lambda a: K.stop_gradient(a))(x)
-
     # Conv layers
     x = KL.TimeDistributed(KL.Conv2D(256, (3, 3), padding="same"),
                            name="mrcnn_mask_conv1")(x)
@@ -934,11 +932,11 @@ def build_fpn_mask_graph(rois, feature_maps,
     x = KL.TimeDistributed(BatchNorm(axis=3),
                            name='mrcnn_mask_bn4')(x)
     x = KL.Activation('relu')(x)
+
     x = KL.TimeDistributed(KL.Conv2DTranspose(256, (2, 2), strides=2, activation="relu"),
                            name="mrcnn_mask_deconv")(x)
     x = KL.TimeDistributed(KL.Conv2D(num_classes, (1, 1), strides=1, activation="sigmoid"),
                            name="mrcnn_mask")(x)
-
     return x
 
 
@@ -2148,6 +2146,8 @@ class MaskRCNN():
         # Data generators
         train_generator = data_generator(train_dataset, self.config, shuffle=True,
                                          batch_size=self.config.BATCH_SIZE)
+        val_generator = data_generator(val_dataset, self.config, shuffle=True,
+                                       batch_size=self.config.BATCH_SIZE)
 
         # Callbacks
         callbacks = [
@@ -2161,17 +2161,12 @@ class MaskRCNN():
         fit_kwargs = {
             "steps_per_epoch": self.config.STEPS_PER_EPOCH,
             "callbacks": callbacks,
+            "validation_data": next(val_generator),
+            "validation_steps": self.config.VALIDATION_STEPS,
             "max_queue_size": 100,
             "workers": max(self.config.BATCH_SIZE // 2, 2),
             "use_multiprocessing": True,
         }
-
-        # Sometimes we have training without validation, due to the lack of massive amounts of data
-        if val_dataset.image_ids:
-            val_generator = data_generator(val_dataset, self.config, shuffle=True,
-                                       batch_size=self.config.BATCH_SIZE)
-            fit_kwargs["validation_data": next(val_generator)]
-            fit_kwargs["validation_steps": self.config.VALIDATION_STEPS]
 
         # Train
         log("\nStarting at epoch {}. LR={}\n".format(self.epoch, learning_rate))

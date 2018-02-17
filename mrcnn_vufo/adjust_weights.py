@@ -20,6 +20,11 @@ def adjust_weights(weightsPath, weightsOutputPath):
 
 	with h5py.File(weightsOutputPath, "w") as weightsOutputFile:
 		with h5py.File(weightsPath, "r") as weightsFile:
+			# Transfer root attributes
+			for name, value in weightsFile.attrs.items(): 
+				weightsOutputFile.attrs[name] = value 
+
+			# Add the actual weights of the layers
 			for layer in weightsFile.keys():
 				layerData = weightsFile[layer]
 				if layer in lastLayers:
@@ -39,21 +44,25 @@ def adjust_weights(weightsPath, weightsOutputPath):
 						bias = nestedLayerData["bias:0"]
 						numberOfConnectionsToKeep = int(len(bias) / numCocoClasses) * numVufoClasses
 						newBias = bias[:numberOfConnectionsToKeep]
-						newKernel = nestedLayerData["kernel:0"][:numberOfConnectionsToKeep][:]
+						newKernel = nestedLayerData["kernel:0"][:,:numberOfConnectionsToKeep]
 					elif layer == "mrcnn_class_logits":
+						# Reduce classes from 81 to 9
 						newBias = nestedLayerData["bias:0"][:numVufoClasses]
-						newKernel = nestedLayerData["kernel:0"][numVufoClasses:][:]
+						newKernel = nestedLayerData["kernel:0"][:,:numVufoClasses]
 					elif layer == "mrcnn_mask":
 						newBias = nestedLayerData["bias:0"][:numVufoClasses]
 						# Kernel dimension of mask layer is 1 x 1 x 256 x 81
-						newKernel = nestedLayerData["kernel:0"][:][:][:][:numVufoClasses]
-						print(newKernel.shape[3])
+						# Slice to 1 x 1 x 256 x 9
+						newKernel = nestedLayerData["kernel:0"][:,:,:,:numVufoClasses]
 
 					group.create_dataset("bias:0", data=newBias)
 					group.create_dataset("kernel:0", data=newKernel)
 				else:
-					groupId = weightsOutputFile.require_group(layer)
-					weightsFile.copy(layer, groupId)
+					weightsFile.copy(layer, weightsOutputFile)
+
+				# Transfer attributes of the layer
+				for name, value in weightsFile[layer].attrs.items():
+					weightsOutputFile[layer].attrs[name] = value
 
 if __name__ == '__main__':
     import argparse

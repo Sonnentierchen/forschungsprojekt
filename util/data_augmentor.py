@@ -3,22 +3,25 @@ import os
 import shutil
 import numpy as np
 import json
-from . import util
+import util
+import random
 
 def replace_image_file_name_in_via_data(json_data, image_file_name, new_image_file_name):
     """
     Extracts the key for the given image entry from the VIA formatted json file.
     :param json_data: the VIA formatted json file
     :param image_file_name: the image file name to retrieve the key for
-    :return:
+    :return: the modified json dictionary
     """
     for key in json_data:
         if image_file_name in key:
             split = key.split(image_file_name)
-            new_key = new_image_file_name + split[0]
+            new_key = new_image_file_name + split[1]
             image_data = json_data[key]
-            image_data["filename"] = new_image_file_name
-            json_data[new_key] = json_data.pop(key)
+            if not image_data is None:
+                # In case that we read an image that is not in the dict we skip it
+                image_data["filename"] = new_image_file_name
+                json_data[new_key] = json_data.pop(key)
 
 def add_noise_to_images(images_path, annotations_path, output_path, noise_type, param_1, param_2):
     """
@@ -32,18 +35,23 @@ def add_noise_to_images(images_path, annotations_path, output_path, noise_type, 
     :param param_1: the first parameter of the noise, usage depends on the type of noise
     :param param_2: the second parameter of the noise, usage depends on the type of noise
     """
+    assert os.path.exists(images_path)
+    assert os.path.exists(annotations_path)
+
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    image_files_names = util.get_images_at_path(images_path)
+    image_file_names = util.get_images_at_path(images_path)
 
-    annotations_file_name = os.path.basename(annotations_path)
-    modified_annotations_file_name = os.path.join(output_path, annotations_file_name)
+    # Filename of annotations file without path, e.g. annotations.json
+    annotations_file_name, annotations_file_extension = os.path.splitext(os.path.basename(annotations_path))
+    # Full path to new annotations file, e.g. /home/user/annotations/annotations_noisy.json
+    modified_annotations_file_path = os.path.join(output_path, annotations_file_name + "_noisy" + annotations_file_extension)
 
-    with open(annotations_file_name, "w") as json_file:
+    with open(annotations_path, "r") as json_file, open(modified_annotations_file_path, "w") as modified_json_file:
         json_data = json.load(json_file)
 
-        for image_file_name in image_files_names:
+        for image_file_name in image_file_names:
             # Load the image to augment
             image = cv2.imread(os.path.join(images_path, image_file_name))
 
@@ -83,14 +91,16 @@ def add_noise_to_images(images_path, annotations_path, output_path, noise_type, 
                 gauss = np.random.randn(row,col,ch)
                 gauss = gauss.reshape(row,col,ch)
                 noisy = image + image * gauss
+            else:
+                raise ValueError("Unkown noise type.")
 
             if not noisy is None:
-                image_file_base_name, extension = os.path.split(image_file_name)
+                image_file_base_name, extension = os.path.splitext(image_file_name)
                 augmented_file_name = image_file_base_name + "_noisy" + extension
                 cv2.imwrite(os.path.join(output_path, augmented_file_name), noisy)
                 replace_image_file_name_in_via_data(json_data, image_file_name, augmented_file_name)
 
-        json.dump(json_data, modified_annotations_file_name)
+        json.dump(json_data, modified_json_file)
 
 def crop_and_resize_images(images_path, annotations_path, output_path):
     """
@@ -101,13 +111,80 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
     :param annotations_path: the path to the annotations file in VIA format
     :param output_path: the path where the results are to be stored
     """
-    image_files_names = util.get_images_at_path(images_path)
+    assert os.path.exists(images_path)
+    assert os.path.exists(annotations_path)
 
-    annotations_file_name = os.path.basename(annotations_path)
-    shutil.copy(annotations_path, os.path.join(output_path, annotations_file_name))
-   
-    #for image_file_name in image_files_names:
-    # TODO
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    image_file_names = util.get_images_at_path(images_path)
+
+    # Filename of annotations file without path, e.g. annotations.json
+    annotations_file_name, annotations_file_extension = os.path.splitext(os.path.basename(annotations_path))
+    # Full path to new annotations file, e.g. /home/user/annotations/annotations_noisy.json
+    modified_annotations_file_path = os.path.join(output_path, annotations_file_name + "_cropped" + annotations_file_extension)
+
+    with open(annotations_path, "r") as json_file, open(modified_annotations_file_path, "w") as modified_json_file:
+        json_data = json.load(json_file)
+
+        for image_file_name in image_file_names:
+
+            # Load the image to augment
+            image = cv2.imread(os.path.join(images_path, image_file_name))
+            width, height, channels = image.shape
+            # At most 20% of the image width or height is used as offset
+            x_offset = random.randint(0, width / 5)
+            y_offset = random.randint(0, height / 5)
+            # And width and height are between 80 and 100% of original
+            crop_width = random.randint((4 * width) / 5, width)
+            crop_height = random.randint((4 * height) / 5, height)
+            # If we have 20% offset plus 100% width or height that's not gonna work
+            crop_width = min(crop_width, width - x_offset)
+            crop_height = min(crop_height, height - y_offset)
+
+            print("Cropping image {} at ({}, {}) to ({}, {})".format(image_file_name, x_offset, y_offset, crop_width, crop_height))
+
+            # Crop image
+            cropped_image = image[x_offset:x_offset + crop_width, y_offset:y_offset + crop_height]
+            image_file_base_name, extension = os.path.splitext(image_file_name)
+            augmented_file_name = image_file_base_name + "_cropped" + extension
+            cv2.imwrite(os.path.join(output_path, augmented_file_name), cropped_image)
+
+            # Adjust the annotations file
+
+            for key in json_data:
+                if image_file_name in key:
+                    # We found the currently process image, now adjust bounding boxes and set the new sizes
+                    image_data = json_data[key]
+                    for region_key in image_data["regions"]:
+                        region_data = image_data["regions"][region_key]
+                        shape_attributes = region_data["shape_attributes"]
+                        x, y, width, height = shape_attributes["x"], shape_attributes["y"], \
+                                              shape_attributes["width"], shape_attributes["height"]
+                        # max function because subtraction could be negative, then the bounding box starts at 0
+                        x = max(x - x_offset, 0)
+                        y = max(y - y_offset, 0)
+                        # min function to account for and old position which will be cropped
+                        width = width + min(x - x_offset, 0)
+                        width = min(width, crop_width - x)
+                        height = height + min(y - y_offset, 0)
+                        height = min(height, crop_height - y)
+                        shape_attributes["x"] = x
+                        shape_attributes["y"] = y
+                        shape_attributes["width"] = width
+                        shape_attributes["height"] = height
+
+                    # Now adjust to the new file name
+                    split = key.split(image_file_name)
+                    new_key = augmented_file_name + split[1]
+                    image_data = json_data[key]
+                    if not image_data is None:
+                        # In case that we read an image that is not in the dict we skip it
+                        image_data["filename"] = augmented_file_name
+                        json_data[new_key] = json_data.pop(key)
+
+        json.dump(json_data, modified_json_file)
+
 
 if __name__ == '__main__':
     import argparse

@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     log("Startin from weights at: " + weights + "\n", log_file)
     if args.excludeWeightsOfLayers:
-        log("Excluding layers {} from weight loading to fully retrain them.\n".format(exclude), log_file)
+        log("Excluding layers {} from weight loading to fully retrain them.\n".format(args.excludeWeightsOfLayers), log_file)
         model.load_weights(weights, by_name=True, exclude=args.excludeWeightsOfLayers)
     else:
         model.load_weights(weights, by_name=True)

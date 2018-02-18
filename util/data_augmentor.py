@@ -86,11 +86,11 @@ def add_noise_to_images(images_path, annotations_path, output_path, noise_type, 
                 statinfo = os.stat(augmented_file_path)
                 for key in json_data:
                     if image_file_name in key:
-                        new_key = new_image_file_name + str(statinfo.st_size)
+                        new_key = augmented_file_name + str(statinfo.st_size)
                         image_data = json_data[key]
                         if not image_data is None:
                             # In case that we read an image that is not in the dict we skip it
-                            image_data["filename"] = new_image_file_name
+                            image_data["filename"] = augmented_file_name
                             image_data["size"] = int(statinfo.st_size)
                             json_data[new_key] = json_data.pop(key)
 
@@ -136,7 +136,7 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
             crop_width = min(crop_width, width - x_offset)
             crop_height = min(crop_height, height - y_offset)
 
-            print("Cropping image {} at ({}, {}) to ({}, {})".format(image_file_name, x_offset, y_offset, crop_width, crop_height))
+            print("Cropping image {} at ({}, {}) to ({}, {}).".format(image_file_name, x_offset, y_offset, crop_width, crop_height))
 
             # Crop image
             cropped_image = image[y_offset:y_offset + crop_height, x_offset:x_offset + crop_width]

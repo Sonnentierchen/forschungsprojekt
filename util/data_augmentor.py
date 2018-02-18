@@ -6,23 +6,6 @@ import json
 import util
 import random
 
-def replace_image_file_name_in_via_data(json_data, image_file_name, new_image_file_name):
-    """
-    Extracts the key for the given image entry from the VIA formatted json file.
-    :param json_data: the VIA formatted json file
-    :param image_file_name: the image file name to retrieve the key for
-    :return: the modified json dictionary
-    """
-    for key in json_data:
-        if image_file_name in key:
-            split = key.split(image_file_name)
-            new_key = new_image_file_name + split[1]
-            image_data = json_data[key]
-            if not image_data is None:
-                # In case that we read an image that is not in the dict we skip it
-                image_data["filename"] = new_image_file_name
-                json_data[new_key] = json_data.pop(key)
-
 def add_noise_to_images(images_path, annotations_path, output_path, noise_type, param_1, param_2):
     """
     Adds noise of the given type to all the images at the specified location and stores them at the specified output
@@ -97,8 +80,19 @@ def add_noise_to_images(images_path, annotations_path, output_path, noise_type, 
             if not noisy is None:
                 image_file_base_name, extension = os.path.splitext(image_file_name)
                 augmented_file_name = image_file_base_name + "_noisy" + extension
-                cv2.imwrite(os.path.join(output_path, augmented_file_name), noisy)
-                replace_image_file_name_in_via_data(json_data, image_file_name, augmented_file_name)
+                augmented_file_path = os.path.join(output_path, augmented_file_name)
+                cv2.imwrite(augmented_file_path, noisy)
+                # VIA format has the file size in the dictionary
+                statinfo = os.stat(augmented_file_path)
+                for key in json_data:
+                    if image_file_name in key:
+                        new_key = new_image_file_name + str(statinfo.st_size)
+                        image_data = json_data[key]
+                        if not image_data is None:
+                            # In case that we read an image that is not in the dict we skip it
+                            image_data["filename"] = new_image_file_name
+                            image_data["size"] = int(statinfo.st_size)
+                            json_data[new_key] = json_data.pop(key)
 
         json.dump(json_data, modified_json_file)
 
@@ -148,7 +142,8 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
             cropped_image = image[x_offset:x_offset + crop_width, y_offset:y_offset + crop_height]
             image_file_base_name, extension = os.path.splitext(image_file_name)
             augmented_file_name = image_file_base_name + "_cropped" + extension
-            cv2.imwrite(os.path.join(output_path, augmented_file_name), cropped_image)
+            augmented_file_path = os.path.join(output_path, augmented_file_name)
+            cv2.imwrite(augmented_file_path, cropped_image)
 
             # Adjust the annotations file
 
@@ -176,11 +171,13 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
 
                     # Now adjust to the new file name
                     split = key.split(image_file_name)
-                    new_key = augmented_file_name + split[1]
+                    statinfo = os.stat(augmented_file_path)
+                    new_key = augmented_file_name + str(statinfo.st_size)
                     image_data = json_data[key]
                     if not image_data is None:
                         # In case that we read an image that is not in the dict we skip it
                         image_data["filename"] = augmented_file_name
+                        image_data["size"] = int(statinfo.st_size)
                         json_data[new_key] = json_data.pop(key)
 
         json.dump(json_data, modified_json_file)

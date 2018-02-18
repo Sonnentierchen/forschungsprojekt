@@ -907,7 +907,7 @@ def build_fpn_mask_graph(rois, feature_maps,
     # Shape: [batch, boxes, pool_height, pool_width, channels]
     x = PyramidROIAlign([pool_size, pool_size], image_shape,
                         name="roi_align_mask")([rois] + feature_maps)
-
+    x = KL.Lambda(lambda a: K.stop_gradient(a))(x)
     # Conv layers
     x = KL.TimeDistributed(KL.Conv2D(256, (3, 3), padding="same"),
                            name="mrcnn_mask_conv1")(x)
@@ -2137,11 +2137,14 @@ class MaskRCNN():
             "3+": r"(res3.*)|(bn3.*)|(res4.*)|(bn4.*)|(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
             "4+": r"(res4.*)|(bn4.*)|(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
             "5+": r"(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
+            "without_mask": r"(?!mrcnn\_mask.*).*|(roi_align_mask)",
             # All layers
             "all": ".*",
         }
         if layers in layer_regex.keys():
             layers = layer_regex[layers]
+
+        print(layers)
 
         # Data generators
         train_generator = data_generator(train_dataset, self.config, shuffle=True,

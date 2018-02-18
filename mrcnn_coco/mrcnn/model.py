@@ -2146,8 +2146,6 @@ class MaskRCNN():
         # Data generators
         train_generator = data_generator(train_dataset, self.config, shuffle=True,
                                          batch_size=self.config.BATCH_SIZE)
-        val_generator = data_generator(val_dataset, self.config, shuffle=True,
-                                       batch_size=self.config.BATCH_SIZE)
 
         # Callbacks
         callbacks = [
@@ -2161,12 +2159,16 @@ class MaskRCNN():
         fit_kwargs = {
             "steps_per_epoch": self.config.STEPS_PER_EPOCH,
             "callbacks": callbacks,
-            "validation_data": next(val_generator),
-            "validation_steps": self.config.VALIDATION_STEPS,
             "max_queue_size": 100,
             "workers": max(self.config.BATCH_SIZE // 2, 2),
             "use_multiprocessing": True,
         }
+
+        if len(val_dataset.image_ids) > 0:
+            val_generator = data_generator(val_dataset, self.config, shuffle=True,
+                                           batch_size=self.config.BATCH_SIZE)
+            fit_kwargs["validation_data"] = next(val_generator)
+            fit_kwargs["validation_steps"] = self.config.VALIDATION_STEPS
 
         # Train
         log("\nStarting at epoch {}. LR={}\n".format(self.epoch, learning_rate))

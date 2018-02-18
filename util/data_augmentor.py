@@ -139,7 +139,7 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
             print("Cropping image {} at ({}, {}) to ({}, {})".format(image_file_name, x_offset, y_offset, crop_width, crop_height))
 
             # Crop image
-            cropped_image = image[x_offset:x_offset + crop_width, y_offset:y_offset + crop_height]
+            cropped_image = image[y_offset:y_offset + crop_height, x_offset:x_offset + crop_width]
             image_file_base_name, extension = os.path.splitext(image_file_name)
             augmented_file_name = image_file_base_name + "_cropped" + extension
             augmented_file_path = os.path.join(output_path, augmented_file_name)

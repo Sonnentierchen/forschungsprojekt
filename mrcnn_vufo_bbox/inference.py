@@ -21,12 +21,12 @@ import skimage.io
 import matplotlib.pyplot as plt
 import cv2
 
-import mrcnn.model_bbox as modellib
+import mrcnn.model as modellib
 import visualize
 import conversion
 import misc
 import extract_frames
-import dataset_retraining_bbox as dataset
+import dataset_retraining as dataset
 
 # COCO Class names
 # Index of the class in the list is its ID. For example, to get ID of

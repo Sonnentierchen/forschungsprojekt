@@ -12,11 +12,11 @@ from pycocotools import mask as maskUtils
 import mrcnn.coco as coco
 from mrcnn.config import Config
 from mrcnn import utils
-import mrcnn.model_bbox as modellib
+import mrcnn.model as modellib
 
 import misc
 # Our dataset with the reduced 9 classes instead of the 81 COCO classes
-import dataset_retraining_bbox as dataset
+import dataset_retraining as dataset
 
 def evaluate(weightsPath, imagesPaths, groundTruthPaths, outputPath, outputModelPath, limit):
 

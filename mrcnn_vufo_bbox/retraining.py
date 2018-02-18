@@ -1,6 +1,6 @@
 import os
-import dataset_retraining_bbox as dataset
-from mrcnn import model_bbox as model
+import dataset_retraining as dataset
+from mrcnn import model
 
 import datetime
 

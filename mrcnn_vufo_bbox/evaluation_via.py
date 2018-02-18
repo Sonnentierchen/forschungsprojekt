@@ -1,6 +1,6 @@
 import os
 import conversion
-import evaluation_bbox as evaluation
+import evaluation
 import json
 
 def evaluate_via(weightsPath, imagesPaths, viaGroundTruthAnnotationsPaths, outputPath, outputModelPath, limit):

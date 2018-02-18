@@ -78,6 +78,7 @@ def add_noise_to_images(images_path, annotations_path, output_path, noise_type, 
                 raise ValueError("Unkown noise type.")
 
             if not noisy is None:
+                print("Adding noise to image {}.".format(image_file_name))
                 image_file_base_name, extension = os.path.splitext(image_file_name)
                 augmented_file_name = image_file_base_name + "_noisy" + extension
                 augmented_file_path = os.path.join(output_path, augmented_file_name)

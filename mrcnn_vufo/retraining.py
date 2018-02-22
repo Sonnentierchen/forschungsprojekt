@@ -118,8 +118,9 @@ if __name__ == '__main__':
     for index in range(len(trainImagesPaths)):
         trainImagesPath = trainImagesPaths[index]
         trainAnnotationsPath = trainAnnotationsPaths[index]
-        assert os.path.exists(trainImagesPath)
-        assert os.path.exists(trainAnnotationsPath)
+        assert os.path.exists(trainImagesPath), "Images path {} does not exist.".format(trainImagesPath)
+        assert os.path.exists(trainAnnotationsPath), "Annotations file {} does not exist.".format(trainAnnotationsPath)
+        log("Adding images at {} with groundtruth at {}.\n".format(trainImagesPath, trainAnnotationsPath), log_file)
         dataset_train.load_coco(trainImagesPath, trainAnnotationsPath)
 
     dataset_train.prepare()
@@ -129,9 +130,10 @@ if __name__ == '__main__':
         for index in range(len(valImagesPaths)):
             valImagesPath = valImagesPaths[index]
             valAnnotationsPath = valAnnotationsPaths[index]
-            assert os.path.exists(valImagesPath)
-            assert os.path.exists(valAnnotationsPath)
-            dataset_val.load_coco(valImagesPath, valAnnotationsPath)
+            assert os.path.exists(valImagesPath), "Images path {} does not exist.".format(valImagesPath)
+            assert os.path.exists(valAnnotationsPath), "Annotations file {} does not exist.".format(valAnnotationsPath)
+        log("Adding images at {} with groundtruth at {}.\n".format(valImagesPath, valAnnotationsPath), log_file)
+        dataset_val.load_coco(valImagesPath, valAnnotationsPath)
 
     dataset_val.prepare()
 

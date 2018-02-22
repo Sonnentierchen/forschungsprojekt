@@ -2121,7 +2121,7 @@ class MaskRCNN():
         layers: Allows selecting wich layers to train. It can be:
             - A regular expression to match layer names to train
             - One of these predefined values:
-              heaads: The RPN, classifier and mask heads of the network
+              heads: The RPN, classifier and mask heads of the network
               all: All the layers
               3+: Train Resnet stage 3 and up
               4+: Train Resnet stage 4 and up
@@ -2137,14 +2137,11 @@ class MaskRCNN():
             "3+": r"(res3.*)|(bn3.*)|(res4.*)|(bn4.*)|(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
             "4+": r"(res4.*)|(bn4.*)|(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
             "5+": r"(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
-            "without_mask": r"(?!mrcnn\_mask.*).*|(roi_align_mask)",
             # All layers
             "all": ".*",
         }
         if layers in layer_regex.keys():
             layers = layer_regex[layers]
-
-        print(layers)
 
         # Data generators
         train_generator = data_generator(train_dataset, self.config, shuffle=True,

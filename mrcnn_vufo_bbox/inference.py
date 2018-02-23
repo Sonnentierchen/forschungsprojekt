@@ -77,6 +77,8 @@ def images_inference(modelWeightsPath, imagesPath, limit, outputPath, storeImage
                  the detected bouding boxes drawn inside them
     """
     # Filter for only images
+    assert os.path.exists(modelWeightsPath)
+    assert os.path.exists(imagesPath)
     includedExtensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
     imageFileNames = [fn for fn in os.listdir(imagesPath)
               if any(fn.endswith(ext) for ext in includedExtensions)]

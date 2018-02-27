@@ -1,1 +1,0 @@
-It is important to generate a proper area for the bounding boxes, as the different COCO evaluation areas small medium large take into account the area

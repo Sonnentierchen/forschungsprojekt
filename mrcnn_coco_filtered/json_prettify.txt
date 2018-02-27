@@ -1,1 +1,0 @@
-cat myjsonfile.json | python -m json.tool > pretty.json

@@ -1,1 +1,0 @@
-COCO location: /home/florian/anaconda3/envs/tensorflow/lib/python3.5/site-packages/pycocotools

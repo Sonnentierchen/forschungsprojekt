@@ -87,3 +87,7 @@ The command takes several parameters, but that makes it rather flexible.
 ```
 python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -l assets/output/training/coco/2017/ --trainImagesPaths assets/input/coco/2017/train2017/ --trainAnnotationsPaths assets/input/coco/2017/annotations/instances_train2017.json --valImagesPaths assets/input/coco/2017/val2017/ --valAnnotationsPaths assets/input/coco/2017/annotations/instances_val2017.json -r 1 --epochs 100 --learningRates 0.0003 --layers all
 ```
+
+## Experiments
+
+Further training was conducted on the MS COCO 2017 dataset. This experiment was performed more of the purpose to get to know the network and a feeling for training than major results. As expected the loss was more jumpy than decreasing.

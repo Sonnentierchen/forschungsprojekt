@@ -11,3 +11,5 @@ If you don't want to leave out the last layers of a pre-trained weights file you
 ### Command explanation
 
 `mrcnn_vufo/adjust_weights.py` deletes the rows and columns in the weights matrices that are related to the non-VUFO classes. For details see the script.
+
+## Experiments

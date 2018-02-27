@@ -49,9 +49,8 @@ The VUFO dataset consists of about 1500 hand-annoated images using the VIA tool.
 
 # The experiments
 
+The final results of experiments are store within the `train` folder of the respective network. The details of the experiment are listed in the README of the network's folder. The naming of the folders indicates the state of the experiment that was applied.
 
-train folder contain training results and for each trainig result a video an evaluation file etc
-* explanation of structure of weights
-*
+All experiment folders have in common, that the final results were again once run on a video, i.e. video7.3gp of the VUFO dataset and evaluated on the whole 1500 images VUFO set. The results are stored next to the weights of the experiment. The video.avi and instances.json are the artifacts of the inference run with the produced weights, and the evaluation.txt is the evaluation result on the 1500 images.
 
-tensorflow events -> tensorboard
+To inspect the training process simply open tensorboard with the parameter `--logdir=` set to the folder containing the weights and the events. It should then be possible to view the loss functions etc.

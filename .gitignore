@@ -1,1 +1,4 @@
 Matterport%20Mask%20RCNN/weights/*
+**/train/
+**/__pychache__/
+.gitignore

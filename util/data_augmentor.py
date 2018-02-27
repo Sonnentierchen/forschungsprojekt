@@ -121,6 +121,7 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
 
     with open(annotations_path, "r") as json_file, open(modified_annotations_file_path, "w") as modified_json_file:
         json_data = json.load(json_file)
+        new_json_data = {}
 
         for image_file_name in image_file_names:
 
@@ -152,36 +153,66 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
                 if image_file_name in key:
                     # We found the currently process image, now adjust bounding boxes and set the new sizes
                     image_data = json_data[key]
+                    new_image_data = {"base64_img_data" : image_data["base64_img_data"], \
+                                      "fileref" : image_data["fileref"], \
+                                      "file_attributes" : image_data["file_attributes"]}
+                    new_image_data["regions"] = {}
                     for region_key in image_data["regions"]:
                         region_data = image_data["regions"][region_key]
                         shape_attributes = region_data["shape_attributes"]
-                        x, y, width, height = shape_attributes["x"], shape_attributes["y"], \
+                        box_x, box_y, box_width, box_height = shape_attributes["x"], shape_attributes["y"], \
                                               shape_attributes["width"], shape_attributes["height"]
-                        # max function because subtraction could be negative, then the bounding box starts at 0
-                        x = max(x - x_offset, 0)
-                        y = max(y - y_offset, 0)
-                        # min function to account for and old position which will be cropped
-                        width = width + min(x - x_offset, 0)
-                        width = min(width, crop_width - x)
-                        height = height + min(y - y_offset, 0)
-                        height = min(height, crop_height - y)
-                        shape_attributes["x"] = x
-                        shape_attributes["y"] = y
-                        shape_attributes["width"] = width
-                        shape_attributes["height"] = height
+                        # Same as in conversion.py, we need to care for negative x and y (outside of image)
+                        box_x = max(box_x, 0)
+                        box_y = max(box_y, 0)
+                        # Adjust to regions that go beyond the image
+                        box_width = min(box_width, width - box_x)
+                        box_height = min(box_height, height - box_y)
+
+                        old_x, old_y, old_width, old_height = box_x, box_y, box_width, box_height
+
+                        box_too_far_left = box_x + box_width < x_offset
+                        box_too_far_right = box_x > x_offset + crop_width
+                        box_too_far_up = box_y + box_height < y_offset
+                        box_too_far_down = box_y > y_offset + crop_height
+                        if  box_too_far_left or  box_too_far_right or box_too_far_up or box_too_far_down:
+                            # If box is outside of cropping skip adding it
+                            continue
+
+                        # New x and y positions of the bounding box
+                        box_x = box_x - x_offset
+                        if box_x < 0:
+                            # Old x was outside of cropping, we need to adjust width, i.e. subtract the offset
+                            box_width = box_width + box_x
+                            box_x = 0
+                        if box_x + box_width > crop_width:
+                            # To care for the new box exceeding the image size
+                            box_width = crop_width - box_x
+
+                        box_y = box_y - y_offset
+                        if box_y < 0:
+                            # Same goes for height
+                            box_height = box_height + box_y
+                            box_y = 0
+                        if box_y + box_height > crop_height:
+                            box_height = crop_height - box_y
+                            
+                        shape_attributes["x"] = box_x
+                        shape_attributes["y"] = box_y
+                        shape_attributes["width"] = box_width
+                        shape_attributes["height"] = box_height
+                        new_image_data["regions"][region_key] = region_data
 
                     # Now adjust to the new file name
                     split = key.split(image_file_name)
                     statinfo = os.stat(augmented_file_path)
                     new_key = augmented_file_name + str(statinfo.st_size)
                     image_data = json_data[key]
-                    if not image_data is None:
-                        # In case that we read an image that is not in the dict we skip it
-                        image_data["filename"] = augmented_file_name
-                        image_data["size"] = int(statinfo.st_size)
-                        json_data[new_key] = json_data.pop(key)
+                    new_image_data["filename"] = augmented_file_name
+                    new_image_data["size"] = int(statinfo.st_size)
+                    new_json_data[new_key] = new_image_data
 
-        json.dump(json_data, modified_json_file)
+        json.dump(new_json_data, modified_json_file)
 
 
 if __name__ == '__main__':

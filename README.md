@@ -19,6 +19,8 @@ matplotlib.use('Agg')`
 folder mrcnn is from the github repository
 the rest is mine (most of the time)
 
+train folder contain training results and for each trainig result a video an evaluation file etc
+
 # MS COCO
 
 # The dataset

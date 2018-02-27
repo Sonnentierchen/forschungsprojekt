@@ -2,7 +2,9 @@
 
 The code in `/mrcnn_coco/` is very close to the original GitHub repository with only small changes. The classes are kept the same in training, and only some rudimentary filtering to keep only VUFO classes in inference and evaluation are provided. This code was used to get to know the network and try out a few things.
 
-Functions like the script in conversion.py and extract_frames.py are not described here as they should be self-explanatory.
+## Conversion
+
+This script's purpose is to convert VIA-formatted data to the COCO format. The whole network as already adjusted to the COCO format and this way it is possible to use the COCO evaluation functions.
 
 ## Inference
 
@@ -20,7 +22,9 @@ The following section explains how to perform inference with the code in `/mrcnn
 
 ### Command examples
 
-`python mrcnn_coco/inference.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -v ./assets/input/vufo/original/videos/video7.3gp -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -s True -l 1200`
+```
+python mrcnn_coco/inference.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -v ./assets/input/vufo/original/videos/video7.3gp -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -s True -l 1200
+```
 
 ### Inference Filtered
 
@@ -45,7 +49,9 @@ The following section explains how to perform evaluation with the code in `/mrcn
 
 The following command evaluates the weights that were trained on COCO data on the 1500 VUFO dataset.
 
-`python mrcnn_coco/evaluation.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -i assets/input/vufo_1500/original/all_videos/ -g assets/input/vufo_1500/original/all_videos/all_videos_annotations_converted.json -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -l 1200`
+```
+python mrcnn_coco/evaluation.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -i assets/input/vufo_1500/original/all_videos/ -g assets/input/vufo_1500/original/all_videos/all_videos_annotations_converted.json -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -l 1200
+```
 
 ### Evaluation Filtered
 
@@ -76,4 +82,6 @@ The command takes several parameters, but that makes it rather flexible.
 
 ### Command examples
 
-`python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -l assets/output/training/coco/2017/ --trainImagesPaths assets/input/coco/2017/train2017/ --trainAnnotationsPaths assets/input/coco/2017/annotations/instances_train2017.json --valImagesPaths assets/input/coco/2017/val2017/ --valAnnotationsPaths assets/input/coco/2017/annotations/instances_val2017.json -r 1 --epochs 100 --learningRates 0.0003 --layers all`
+```
+python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -l assets/output/training/coco/2017/ --trainImagesPaths assets/input/coco/2017/train2017/ --trainAnnotationsPaths assets/input/coco/2017/annotations/instances_train2017.json --valImagesPaths assets/input/coco/2017/val2017/ --valAnnotationsPaths assets/input/coco/2017/annotations/instances_val2017.json -r 1 --epochs 100 --learningRates 0.0003 --layers all
+```

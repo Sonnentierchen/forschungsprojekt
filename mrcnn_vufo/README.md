@@ -1,73 +1,13 @@
-# Forschungsprojekt
+# Mask RCNN with VUFO classes
 
-This project aims at using the Mask RCNN implementation available at https://github.com/matterport/Mask_RCNN, strip it of its masking functioning and only keep the bounding box detection. The application domain is videos filmed inside driving cars but is not limited to it. The model pre-trained on the MS Coco dataset is used as the training for masking positvely influences the bounding box detection capability.
+The code in `/mrcnn_vufo/` has been modified to work with VUFO classes only. The configuration files for the network indicate only 9 classes, i.e. background and the 8 VUFO classes. There are scripts in this folder to remove the weights that are related to the non-VUFO classes and would prevent loading the pre-trained weights. This is not an issue if the last layers of the bbox branch are omitted as in that case the wrongly shaped weights of those layers are not loaded at all.
 
-# Setup
+Since the inference, evaluation and training scripts work just as the ones in `mrcnn_coco` they are not explained here again. The key differences are the possibility to adjust a weights file and the changed number of classes.
 
-The following is supposed to describe the setup process to be able to run the Mask RCNN network (https://github.com/matterport/Mask_RCNN).
+## Adjust weights
 
-## Setting up the environment
+If you don't want to leave out the last layers of a pre-trained weights file you can use the script in adjust_weights.py which will omit any information in the weights related to the non-VUFO classes of index 8 and higher. To see what the script does it is best to inspect a weights file with the HDFViewer and look for the layers that are being edited in the script.
 
-**There is also an Anaconda installation file named install.txt that can be used to install all dependencies with Anaconda**
+### Command explanation
 
-* Download and install Anaconda (https://conda.io/docs/user-guide/install/download.html)
-* Create a virtual environment with Python 3.5 
-```
-conda create -n tensorflow python=3.5
-```
-* Activate the environment: source activate tensorflow
-* Do the following with activated source
-```
-conda install tensorflow
-```
-```
-conda install matplotlib
-```
-```
-conda install scikit-image
-```
-```
-conda install opencv
-```
-```
-conda install keras
-```
-```
-conda install ipython
-```
-```
-conda install cython
-```
-* Clone with git: https://github.com/cocodataset/cocoapi.git.
-* cd into the cocoapi/PythonAPI folder
-* execute 
-```
-make
-```
-* Still in the folder execute
-```
-python setup.py install
-```
-
-## Setting up the Mask RCNN implementation
-
-* Clone with git: https://github.com/matterport/Mask_RCNN and put the code into the mrcnn folder.
-* Download the weights for the network at https://github.com/matterport/Mask_RCNN/releases and put them in the root folder where you cloned this project. The weights have to be named mask_rcnn_coco.h5.
-
-# Using the network
-
-## Inference
-
-## Evaluation
-
-## Training
-
-# Notes
-
-Here is a collection of what to pay attention to when using the network.
-
-* Input images have to in **.png** format, .jpgs are not accepted, but the error occurs later when the shape of the image is to be accessed.
-* If Mask RCNN is cloned fresh and put in the mrcnn folder, there has to be a change made to modely.py: instead of `import utils` the line needs to be `from mrcnn.utils import utils`
-* matplotlib cannot plot using SSH on the computing machine, since there's not XServer running. To fix this, add this at the top of the file using the matplotlib: `import matplotlib
-matplotlib.use('Agg')`
-* Ignore that opencv's VideoCapture outputs `Wrong sample count`, extraction of videoframes works nonetheless
+`mrcnn_vufo/adjust_weights.py` deletes the rows and columns in the weights matrices that are related to the non-VUFO classes. For details see the script.

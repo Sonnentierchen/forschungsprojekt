@@ -2,6 +2,8 @@
 
 The code in `/mrcnn_coco/` is very close to the original GitHub repository with only small changes. The classes are kept the same in training, and only some rudimentary filtering to keep only VUFO classes in inference and evaluation are provided. This code was used to get to know the network and try out a few things.
 
+Functions like the script in conversion.py and extract_frames.py are not described here as they should be self-explanatory.
+
 ## Inference
 
 The following section explains how to perform inference with the code in `/mrcnn_coco/`, i.e. run the network on images.
@@ -15,7 +17,6 @@ The following section explains how to perform inference with the code in `/mrcnn
 * `-i`: the path to the images folder
 * `-s`: indicates, whether also the images or video with the rendered bounding boxes should be saved alongside the COCO-formatted annotations file
 * `-l`: the maximum number of images to process
-
 
 ### Command examples
 
@@ -56,6 +57,23 @@ Both scripts are convenience methods so that the user does not have to convert t
 
 ## Training
 
+The following section explains how to further train the network using the function `mrcnn_coco/training.py`.
+
 ### Command explanation
 
+The command takes several parameters, but that makes it rather flexible.
+
+* `-w`: the path to the weights
+* `-l`: the path to the logs folder, i.e. where the resulting weights and events are stored at - you can open this folder with tensorboard and inspect the loss, etc.
+* `--trainImagesPaths`: the path to the folder with the training images. You can specify multiple paths, but you also have to specify the same number of annotation paths. For the first path, the first annotations file is used, for the second, the second and so one. So be sure to properly match the images paths and annotation paths.
+* `--trainAnnotationsPaths`: the annotation paths, each belonging to an images path. Be careful: The annotation files have to be in COCO format, not in the VIA format.
+* `--valImagesPaths`: the path to the images used for validation. The same as for the training images holds for the validation images. You need to specify enough validation annotations and they are matched just like the training annotations.
+* `--valAnnotationsPaths`: the annotation paths, each belonging to an images path. Be careful: The annotation files have to be in COCO format, not in the VIA format.
+* `-r`: the number of runs. If you specify more than one run, you have to specify enough epochs (e.g. 50 100 200 if you set r to 3- no need to separate with comma), learning rates (e.g. 0.01 0.001 0.0001) and enough layers (e.g. heads 3+ all).
+* `--epochs`: the number of epochs per run. The first number will be used for the first run, the second for the second, etc.
+* `--learningRates`: the learning rate per run. The first number will be used for the first run, the second for the second, etc.
+* `--layers`: the layers to train in each run. This can be a predefined key like "all" or "heads". To see what predefined keys are possible look into `mrcnn/model.py`. Other than that this key takes a regex per run. E.g. for `r=1` you could specify `"(mrcnn_class_logits|mrcnn_class|mrcnn_bbox_fc|mrcnn_bbox)"` to only train the network heads of the bounding box network head but not the mask network head. If you have multiple runs you have to specify multiple strings.
+
 ### Command examples
+
+`python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -l assets/output/training/coco/2017/ --trainImagesPaths assets/input/coco/2017/train2017/ --trainAnnotationsPaths assets/input/coco/2017/annotations/instances_train2017.json --valImagesPaths assets/input/coco/2017/val2017/ --valAnnotationsPaths assets/input/coco/2017/annotations/instances_val2017.json -r 1 --epochs 100 --learningRates 0.0003 --layers all`

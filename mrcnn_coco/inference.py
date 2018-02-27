@@ -45,7 +45,7 @@ class InferenceConfig(coco.CocoConfig):
 def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=False):
     videoFolder = os.path.dirname(videoPath)
     videoName = os.path.basename(videoPath)
-    videoFramesFolder = os.path.join(videoFolder, videoName.lower(), "extracted_frames")
+    videoFramesFolder = os.path.join(videoFolder, videoName.lower() + "_extracted_frames")
     if os.path.exists(videoFramesFolder):
         shutil.rmtree(videoFramesFolder)
     os.makedirs(videoFramesFolder)
@@ -53,6 +53,8 @@ def video_inference(modelWeightsPath, videoPath, limit, outputPath, storeImages=
     extract_frames.extract_frames(videoPath, videoFramesFolder, limit, "none")
 
     results, inferenceOutputPath = images_inference(modelWeightsPath, videoFramesFolder, limit, outputPath, storeImages)
+    
+    shutil.rmtree(videoFramesFolder)
 
     #shutil.rmtree(videoFramesFolder)
 

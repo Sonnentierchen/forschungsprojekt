@@ -1,73 +1,61 @@
-# Forschungsprojekt
+# Mask RCNN with COCO classes
 
-This project aims at using the Mask RCNN implementation available at https://github.com/matterport/Mask_RCNN, strip it of its masking functioning and only keep the bounding box detection. The application domain is videos filmed inside driving cars but is not limited to it. The model pre-trained on the MS Coco dataset is used as the training for masking positvely influences the bounding box detection capability.
-
-# Setup
-
-The following is supposed to describe the setup process to be able to run the Mask RCNN network (https://github.com/matterport/Mask_RCNN).
-
-## Setting up the environment
-
-**There is also an Anaconda installation file named install.txt that can be used to install all dependencies with Anaconda**
-
-* Download and install Anaconda (https://conda.io/docs/user-guide/install/download.html)
-* Create a virtual environment with Python 3.5 
-```
-conda create -n tensorflow python=3.5
-```
-* Activate the environment: source activate tensorflow
-* Do the following with activated source
-```
-conda install tensorflow
-```
-```
-conda install matplotlib
-```
-```
-conda install scikit-image
-```
-```
-conda install opencv
-```
-```
-conda install keras
-```
-```
-conda install ipython
-```
-```
-conda install cython
-```
-* Clone with git: https://github.com/cocodataset/cocoapi.git.
-* cd into the cocoapi/PythonAPI folder
-* execute 
-```
-make
-```
-* Still in the folder execute
-```
-python setup.py install
-```
-
-## Setting up the Mask RCNN implementation
-
-* Clone with git: https://github.com/matterport/Mask_RCNN and put the code into the mrcnn folder.
-* Download the weights for the network at https://github.com/matterport/Mask_RCNN/releases and put them in the root folder where you cloned this project. The weights have to be named mask_rcnn_coco.h5.
-
-# Using the network
+The code in `/mrcnn_coco/` is very close to the original GitHub repository with only small changes. The classes are kept the same in training, and only some rudimentary filtering to keep only VUFO classes in inference and evaluation are provided. This code was used to get to know the network and try out a few things.
 
 ## Inference
 
+The following section explains how to perform inference with the code in `/mrcnn_coco/`, i.e. run the network on images.
+
+### Command explanation
+
+`mrcnn_coco/inference.py` runs the network on the specified image folder or video using the inidcated weights.
+
+* `-w`: the path to the weights
+* `-v`: the path to the video - if images folder is specified, inference is run on images and not on videos
+* `-i`: the path to the images folder
+* `-s`: indicates, whether also the images or video with the rendered bounding boxes should be saved alongside the COCO-formatted annotations file
+* `-l`: the maximum number of images to process
+
+
+### Command examples
+
+`python mrcnn_coco/inference.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -v ./assets/input/vufo/original/videos/video7.3gp -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -s True -l 1200`
+
+### Inference Filtered
+
+`mrcnn_coco/inference_filtered.py` is the same function as stated above but filters out all non-VUFO classes.
+
 ## Evaluation
+
+The following section explains how to perform evaluation with the code in `/mrcnn_coco/`.
+
+### Command explanation
+
+`mrcnn_coco/evaluation.py`  runs the network on the images at the given path, but only the ones that are included in the annotations file. It then computes the mean average precision (mAP) using the coco evaluation tools.
+
+* `-w`: the path to the weights
+* `-i`: the path to the images folder
+* `-g`: the path to the ground truth file in COCO format
+* `-o`: the output path where to store the evaluation text file
+* `-m`: do not specify (legacy code)
+* `-l`: the limit of how many images to run the evaluation on
+
+### Command examples
+
+The following command evaluates the weights that were trained on COCO data on the 1500 VUFO dataset.
+
+`python mrcnn_coco/evaluation.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -i assets/input/vufo_1500/original/all_videos/ -g assets/input/vufo_1500/original/all_videos/all_videos_annotations_converted.json -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -l 1200`
+
+### Evaluation Filtered
+
+`mrcnn_coco/evaluation_filtered.py` is the same function as stated above but filters out all non-VUFO classes.
+
+### Evaluation VIA and Evaluation VIA filtered
+
+Both scripts are convenience methods so that the user does not have to convert the VIA-formatted annotation files first using the conversion.py script. This is done automatically and then the normal evaluation or filtered evaluation is run.
 
 ## Training
 
-# Notes
+### Command explanation
 
-Here is a collection of what to pay attention to when using the network.
-
-* Input images have to in **.png** format, .jpgs are not accepted, but the error occurs later when the shape of the image is to be accessed.
-* If Mask RCNN is cloned fresh and put in the mrcnn folder, there has to be a change made to modely.py: instead of `import utils` the line needs to be `from mrcnn.utils import utils`
-* matplotlib cannot plot using SSH on the computing machine, since there's not XServer running. To fix this, add this at the top of the file using the matplotlib: `import matplotlib
-matplotlib.use('Agg')`
-* Ignore that opencv's VideoCapture outputs `Wrong sample count`, extraction of videoframes works nonetheless
+### Command examples

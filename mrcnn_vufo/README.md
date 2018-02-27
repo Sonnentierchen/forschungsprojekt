@@ -1,6 +1,6 @@
 # Mask RCNN with VUFO classes
 
-The code in `/mrcnn_vufo/` has been modified to work with VUFO classes only. The configuration files for the network indicate only 9 classes, i.e. background and the 8 VUFO classes. There are scripts in this folder to remove the weights that are related to the non-VUFO classes and would prevent loading the pre-trained weights. This is not an issue if the last layers of the bbox branch are omitted as in that case the wrongly shaped weights of those layers are not loaded at all.
+The code in `/mrcnn_vufo/` has been modified to work with VUFO classes only. The configuration files for the network indicate only 9 classes, i.e. background and the 8 VUFO classes. There are scripts in this folder to remove the weights that are related to the non-VUFO classes and would prevent loading the pre-trained weights. This is not an issue if the last layers of the bbox branch are omitted as in that case the wrongly shaped weights of those layers are not loaded at all. Another important change is the stop gradient node at the beginning of the mask head branch to prevent the weights from changing and adjusting to the non-existant masks in VIA data.
 
 Since the inference, evaluation and training scripts work just as the ones in `mrcnn_coco` they are not explained here again. The key differences are the possibility to adjust a weights file and the changed number of classes.
 

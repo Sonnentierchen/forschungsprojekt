@@ -6,6 +6,8 @@ The code in `/mrcnn_coco/` is very close to the original GitHub repository with 
 
 This script's purpose is to convert VIA-formatted data to the COCO format. The whole network as already adjusted to the COCO format and this way it is possible to use the COCO evaluation functions.
 
+**IMPORTANT** The script computes masks in the shape of the bounding box to have any masks present and make the network run. This calls for further action to prevent the weights from changing towards these wrong masks. That's why at the beginning of the mask head branch a keras stop gradient node was inserted.
+
 ## Inference
 
 The following section explains how to perform inference with the code in `/mrcnn_coco/`, i.e. run the network on images.

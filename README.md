@@ -80,7 +80,7 @@ The dataset underwent several stages. The first stage consisted of 400 images ma
 
 During training time I annotated more images and got nearly to 1500 images. This is the vufo_1500 dataset. By re-inspecting the annotated imags I could sometimes see small errors. This is why this dataset has to be treated with caution. I annotated the images with the greatest effort, but without a proper QA it is difficult to keep a steady quality. If you want to inspect my annotations you can use the VIA tool in the `via` folder.
 
-To increase the size of the dataset, data augmentation was employed using the `data_augmentor.py` script in the `util` folder. For furhter details please refer to the README in the `util` folder. The augmentor crops images randomly or adds random noise. This way the dataset was expanded to nearly 4500 images and then, due to the increased amount of data, split into a training and validation set with a ration fo 90$. This was achieved using the `split_via.py` function which randomly splits a VIA-formatted annotations file. 
+To increase the size of the dataset, data augmentation was employed using the `data_augmentor.py` script in the `util` folder. For furhter details please refer to the README in the `util` folder. The augmentor crops images randomly or adds random noise. This way the dataset was expanded to nearly 4500 images and then, due to the increased amount of data, split into a training and validation set with a ration fo 90%. This was achieved using the `split_via.py` function which randomly splits a VIA-formatted annotations file. 
 
 # The experiments
 

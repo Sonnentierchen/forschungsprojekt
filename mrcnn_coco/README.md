@@ -96,3 +96,5 @@ The training schedule was as suggested by the Matterport programmers:
 `layers`: `heads`, `4+`, `all`
 `omitted weights`: `none`
 `learning rate`: `0.001`, `0.001`, `0.0001`
+
+The resulted weights are stored in the folder `train`.

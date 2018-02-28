@@ -16,6 +16,8 @@ If you don't want to leave out the last layers of a pre-trained weights file you
 
 The experiments undertaken with the model in `mrcnn_vufo` were more elaborate than the ones in `mrcnn_coco`. Additionally to restricting the classes to classes required by VUFO, it was tried out whether better results could be achieved leaving out the weights of the last layer, i.e. the bounding box head branch that produces the final bouding box classifications and bounding box deltas, or by furhter training it. It was also evaluated whether it makes more sense to train the whole network or restrict the trainable layers to be the ones of the bounding box head branch. The parameters are all provided under the headline of the respective experiment. All experiments were run using the weights modified with the `adjust_weights.py` script, i.e. `mask_rcnn_vufo_2017_nov.h5` in `assets/pre_trained_weights`.
 
+The results of the training, i.e. the weights are stored in the folder that describe the training parameters. Next to each weights there is the video7 of the VUFO dataset with the bounding boxes drawn into it, 3 extracted frames from the video and the evaluation file that stores the evaluation results of the network on the VUFO 1500 dataset.
+
 ### VUFO 400
 
 The experiments in the `vufo_400_incorrect_conversion` folder were conducted on the VUFO dataset consisting of 400 images. Unfortunately, I figured out later that the script `conversion.py` contained an error, which caused the width or height of a bounding box to be negative in some rather rare cases. The network did not complain during training and probably also took into account the negative widths and heights. That's why the experiments conducted on the VUFO 400 dataset are probably obsolete. The error was later corrected in the VUFO 1500 dataset.
@@ -36,6 +38,23 @@ Training parameters:<br/>
 `omitted weights`: `none`<br/>
 `learning rate`: `0.01`<br/>
 
+Evaluation on VUFO 1500:
+```
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.049
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.135
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.021
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.066
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.050
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.034
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.047
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.063
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.064
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.074
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.066
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.058
+ ```
+
+
 ##### Training all layers and omitting the weights of the bbox head branch
 
 Training parameters:<br/>
@@ -43,6 +62,22 @@ Training parameters:<br/>
 `layers`: `all`<br/>
 `omitted weights`: `weights of bbox head branch`<br/>
 `learning rate`: `0.01`<br/>
+
+Evaluation on VUFO 1500:
+```
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.055
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.143
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.028
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.069
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.057
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.036
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.050
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.068
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.068
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.077
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.075
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.049
+ ```
 
 #### Original and augmented
 

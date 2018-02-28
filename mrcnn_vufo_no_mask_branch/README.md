@@ -16,7 +16,7 @@ Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `bbox head branch only`<br/>
 `omitted weights`: `none`<br/>
-`learning rate`: `0.001`<br/>
+`learning rate`: `0.0003`<br/>
 
 ##### Training the bbox head branch only and omitting the weights of the bbox head branch
 
@@ -24,4 +24,4 @@ Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `bbox head branch only`<br/>
 `omitted weights`: `weights of bbox head branch`<br/>
-`learning rate`: `0.001`<br/>
+`learning rate`: `0.0003`<br/>

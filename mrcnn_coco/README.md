@@ -8,6 +8,8 @@ This script's purpose is to convert VIA-formatted data to the COCO format. The w
 
 **IMPORTANT** The script computes masks in the shape of the bounding box to have any masks present and make the network run. This calls for further action to prevent the weights from changing towards these wrong masks. That's why at the beginning of the mask head branch a keras stop gradient node was inserted.
 
+_Unfortunately, at the beginning of the experiments with the VUFO 400 dataset, the conversion function was faulty. See the experiments in the README of `mrcnn_vufo`. This error was corrected for the VUFO 1500 dataset._
+
 ## Inference
 
 The following section explains how to perform inference with the code in `/mrcnn_coco/`, i.e. run the network on images.
@@ -87,3 +89,10 @@ python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_
 ## Experiments
 
 Further training was conducted on the MS COCO 2017 dataset. This experiment was performed more of the purpose to get to know the network and a feeling for training than major results. As expected the loss was more jumpy than decreasing.
+
+The training schedule was as suggested by the Matterport programmers:
+
+`runs`: `3`
+`layers`: `heads`, `4+`, `all`
+`omitted weights`: `none`
+`learning rate`: `0.001`, `0.001`, `0.0001`

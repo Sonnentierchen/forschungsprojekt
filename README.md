@@ -12,6 +12,7 @@ Since there are a couple of things that need attention and a notes list at the e
 * If you try to run the network and there is an error in the PyCOCO tools that says that `unicode` is unkown, replace `unicode` with `str` and `str` with `byte` in the file that threw the error. This should solve that issue.
 * If your training doesn't work check whether you used the converted annotations file and not the one in VIA format.
 * If you're trying to perform inference on a whole video with a video file and receive the following error: `ValueError: not enough values to unpack (expected 2, got 0)` then the video was not found. Check that the file exists.
+* If the class loss becomes `nan` during training, you probably used the COCO annotations but with non-VUFO classes still present. This becomes a problem in `mrcnn_vufo` and `mrcnn_vufo_no_mask_branch` as they have omitted those classes. If this happends, use the annotation files with the non-VUFO classes removed: `instances_val2017_vufo.json` and `instances_train2017_vufo.json`. They are both provided in the `assets` folder. If you need other COCO annotations without non-VUFO classes please refer to the README in the `util` folder.
 
 # The network
 
@@ -60,11 +61,11 @@ This folder contains Matterport's network in its nearly original state.
 
 ## MRCNN VUFO
 
-This folder contains the network with the COCO classes removed.
+This folder contains the network with the non-VUFO classes, i.e. COCO classes with an index greater than 8, removed.
 
 ## MRCNN VUFO No Mask Branch
 
-This folder contains the heavliy modified network that has no mask branch anymore and does not use the mask loss for training.
+Based on `mrcnn_vufo`, in this model the mask branch is cut off and only the branch head that produces bounding boxes is kept (besides of course the ROI network and the ResNet-101 backbone).
 
 # MS COCO
 

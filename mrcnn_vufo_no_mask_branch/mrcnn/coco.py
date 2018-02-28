@@ -132,7 +132,6 @@ class CocoDataset(utils.Dataset):
 
         # Add images
         for i in image_ids:
-            print(os.path.join(image_dir, coco.imgs[i]['file_name']))
             self.add_image(
                 "coco", image_id=i,
                 path=os.path.join(image_dir, coco.imgs[i]['file_name']),
@@ -310,7 +309,7 @@ class CocoDataset(utils.Dataset):
 #  COCO Evaluation
 ############################################################
 
-def build_coco_results(dataset, image_ids, rois, class_ids, scores, masks):
+def build_coco_results(dataset, image_ids, rois, class_ids, scores):
     """Arrange resutls to match COCO specs in http://cocodataset.org/#format
     """
     # If no results, return an empty list
@@ -324,14 +323,12 @@ def build_coco_results(dataset, image_ids, rois, class_ids, scores, masks):
             class_id = class_ids[i]
             score = scores[i]
             bbox = np.around(rois[i], 1)
-            mask = masks[:, :, i]
 
             result = {
                 "image_id": image_id,
                 "category_id": dataset.get_source_class_id(class_id, "coco"),
                 "bbox": [bbox[1], bbox[0], bbox[3] - bbox[1], bbox[2] - bbox[0]],
-                "score": score,
-                "segmentation": maskUtils.encode(np.asfortranarray(mask))
+                "score": score
             }
             results.append(result)
     return results
@@ -369,7 +366,7 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
         # Convert results to COCO format
         image_results = build_coco_results(dataset, coco_image_ids[i:i + 1],
                                            r["rois"], r["class_ids"],
-                                           r["scores"], r["masks"])
+                                           r["scores"])
         results.extend(image_results)
 
     # Load results. This modifies results with additional attributes.

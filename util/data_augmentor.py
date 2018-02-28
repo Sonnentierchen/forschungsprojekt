@@ -201,9 +201,7 @@ def crop_and_resize_images(images_path, annotations_path, output_path):
                         shape_attributes["y"] = box_y
                         shape_attributes["width"] = box_width
                         shape_attributes["height"] = box_height
-                        if not box_width < 3 and not box_height < 3:
-                            # Filter out regions that are too small
-                            new_image_data["regions"][region_key] = region_data
+                        new_image_data["regions"][region_key] = region_data
 
                     # Now adjust to the new file name
                     split = key.split(image_file_name)

@@ -176,21 +176,21 @@ def via_data_to_coco_evaluation_format(imagesPath, annotationsPath):
                   box_width = width - box_x
                 if box_y + box_height > height:
                   box_height = height - box_y
-                # Hack, because the network expects masks we give it a mask in the form of the bounding box -> not problematic
-                # since we stop the gradient with Kl.stop_gradient in the mask network head
-                cocoData["annotations"].append({"segmentation" : [[box_x, box_y, \
-                                                                  box_x + box_width, box_y, \
-                                                                  box_x + box_width, box_y + box_width, \
-                                                                  box_x, box_y + box_width]],
-                                                "area" : shapeAttributes["width"] * shapeAttributes["height"],
-                                                "iscrowd" : 0,
-                                                "image_id" : imageIndex,
-                                                "bbox" : [box_x,
-                                                          box_y,
-                                                          box_width,
-                                                          box_height],
-                                                "category_id" : category["id"],
-                                                "id" : annotationIndex})
+                if not box_width < 3 and not box_height < 3:
+                  # filter out boxes that are too small
+                  cocoData["annotations"].append({"segmentation" : [[box_x, box_y, \
+                                                                    box_x + box_width, box_y, \
+                                                                    box_x + box_width, box_y + box_width, \
+                                                                    box_x, box_y + box_width]],
+                                                  "area" : shapeAttributes["width"] * shapeAttributes["height"],
+                                                  "iscrowd" : 0,
+                                                  "image_id" : imageIndex,
+                                                  "bbox" : [box_x,
+                                                            box_y,
+                                                            box_width,
+                                                            box_height],
+                                                  "category_id" : category["id"],
+                                                  "id" : annotationIndex})
                 annotationIndex += 1
 
             imageIndex += 1
@@ -213,8 +213,8 @@ if __name__ == '__main__':
                         help="The path to the annoations that are to be converted.")
 
     args = parser.parse_args()
-    assert os.path.exists(args.imagesPath)
-    assert os.path.exists(args.annotationsPath)
+    assert os.path.exists(args.imagesPath), "Images path {} does not exist.".format(args.imagesPath)
+    assert os.path.exists(args.annotationsPath), "Annotations path {} does not exist.".format(args.annotationsPath)
 
     result = via_data_to_coco_evaluation_format(args.imagesPath, args.annotationsPath)
 

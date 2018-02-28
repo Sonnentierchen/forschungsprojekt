@@ -30,15 +30,15 @@ Here the dataset consisted of only the original 400 VUFO images without any data
 
 ##### Training all layers without omitting weights
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `all`<br/>
 `omitted weights`: `none`<br/>
 `learning rate`: `0.01`<br/>
 
-##### Training all layers by omitting the weights of the bbox head branch
+##### Training all layers and omitting the weights of the bbox head branch
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `all`<br/>
 `omitted weights`: `weights of bbox head branch`<br/>
@@ -50,7 +50,7 @@ For these experiments the VUFO 400 dataset was expanded using the data augmentor
 
 ##### Training all layers without omitting weights
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `all`<br/>
 `omitted weights`: `none`<br/>
@@ -58,23 +58,23 @@ Training parameters:
 
 ##### Training all layers by omitting the weights of the bbox head branch
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `all`<br/>
 `omitted weights`: `weights of bbox head branch`<br/>
 `learning rate`: `0.001`<br/>
 
-##### Training the bbox head branch only without omitting weights
+##### Training the bbox head branch only and without omitting weights
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `bbox head branch only`<br/>
 `omitted weights`: `none`<br/>
 `learning rate`: `0.0003`<br/>
 
-##### Training the bbox head branch only omitting the weights of the bbox head branch
+##### Training the bbox head branch only and omitting the weights of the bbox head branch
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `bbox head branch only`<br/>
 `omitted weights`: `weights of bbox head branch`<br/>
@@ -84,9 +84,9 @@ Training parameters:
 
 For this experiment, the validation part of the COCO 2017 dataste was added to keep the network from storing overfitted weights.
 
-##### Training the bbox head branch only without omitting weights
+##### Training the bbox head branch only and without omitting weights
 
-Training parameters:
+Training parameters:<br/>
 `runs`: `1`<br/>
 `layers`: `bbox head branch only`<br/>
 `omitted weights`: `none`<br/>
@@ -99,14 +99,32 @@ Since the dataset expanded to nearly 4500 images, 1500 original images, 1500 cro
 
 #### Original and augmented and the COCO val set for validation
 
-
+For this experiment, the COCO validation set was added as validation to keep the network from storing overfitted weights.
 
 ##### Training all layers without omitting weights
+
+Training parameters:<br/>
+`runs`: `1`<br/>
+`layers`: `all`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.0003`<br/>
 
 #### Original and augmented and the COCO val set for training
 
-In these experiments, the VUFO 1500 dataset was enriched with the COCO valiation set for training. 
+In these experiments, the VUFO 1500 dataset was enriched with the COCO valiation set for training. This was an experimental decision based on the assumption, that althought the network should not be trained with the validation data, it might keep the network from overtting towards the VUFO data and at the same time improve the network performance because it is trained with more data it hadn't been trained on before.
 
 ##### Training all layers without omitting weights
 
-##### Training the bbox head branch only without omitting weights
+Training parameters:<br/>
+`runs`: `1`<br/>
+`layers`: `all`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.0003`<br/>
+
+##### Training the bbox head branch only and without omitting weights
+
+Training parameters:<br/>
+`runs`: `1`<br/>
+`layers`: `bbox head branch only`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.0003`<br/>

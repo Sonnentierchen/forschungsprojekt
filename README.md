@@ -40,6 +40,8 @@ The initial pre-trained weights of the network were taken from https://github.co
 
 The project is structure into several folders which we want to explain here. Each folder contains another README explaining the functions and everything else in detail. The structure of the training results is explained in the README of the respective network folder, e.g. in the README in `mrcnn_vufo`.
 
+_The `mrcnn` subfolder always holds the copy of Matterport's Mask RCNN, sometimes adapted to needs._
+
 ## Installation
 
 This folder contains a README on how to install everything needed to make the network run as well as the dependencies file need by Anaconda.
@@ -72,13 +74,15 @@ The project by Matterport uses the MS COCO dataset to train the network and COCO
 
 _Since it does not make any sense to keep the smaller dataset it has been omitted and only the larger one is shipped with this project._
 
+The VUFO dataset is comprised of frames extracted from VUFO videos. The extracted frames as well as the videos can be found in the assets folder.
+
 ## VUFO 400
 
-The dataset underwent several stages. The first stage consisted of 400 images manually annotated in VIA. After some training runs, I concluded that the bad quality of the results might also lie in the quality of the training data and I could verify that in COCO the bouding boxes were drawn a lot tighter than I had done. That's why I improved the quality of the bounding boxes again. But improving the quality was only possible to some extend, as the quality of the videos is rather poor and often cars could be recognized in the distant but only from the context of the whole image. E.g. if there is a black bump on the otherwise gray autobahn then that's a car. But a network might not be able to properly adapt to a 5 times 5 pixel car. Those cars have been annotated anyways since a human is capable of detecting those and that should be the goal of the network. The data augmentor was written to increase the number of new images.
+For VUFO 400, 40 videos were chosen at random and 10 images were extracted from each at regular intervals. The 400 images were manually annotated in VIA. After some training runs, I concluded that the bad quality of the results might also lie in the quality of the training data and I could verify that in COCO the bouding boxes were drawn a lot tighter than I had done. That's why I improved the quality of the bounding boxes again. But improving the quality was only possible to some extend, as the quality of the videos is rather poor and often cars could be recognized in the distant but only from the context of the whole image. E.g. if there is a black bump on the otherwise gray autobahn then that's a car. But a network might not be able to properly adapt to a 5 times 5 pixel car. Those cars have been annotated anyways since a human is capable of detecting those and that should be the goal of the network. The data augmentor was written to increase the number of new images.
 
 ## VUFO 1500
 
-During training time I annotated more images and got nearly to 1500 images. This is the vufo_1500 dataset. By re-inspecting the annotated imags I could sometimes see small errors. This is why this dataset has to be treated with caution. I annotated the images with the greatest effort, but without a proper QA it is difficult to keep a steady quality. If you want to inspect my annotations you can use the VIA tool in the `via` folder.
+For VUFO 1500, the number of videos was increased to 150, using the old videos as well and again 10 images per video were extracted. This resulted in nearly 1500 images that were annoted by hand using the VIA tool. The reason why only nearly is probably because some frames in the videos are faulty which resulted in less than 10 images for some videos. By re-inspecting the annotated imags there are sometimes see small errors visible. This is why this dataset has to be treated with caution. The images were annoated with the greatest effort, but without a proper QA it is difficult to keep a steady quality. If you want to inspect my annotations you can use the VIA tool in the `via` folder.
 
 To increase the size of the dataset, data augmentation was employed using the `data_augmentor.py` script in the `util` folder. For furhter details please refer to the README in the `util` folder. The augmentor crops images randomly or adds random noise. This way the dataset was expanded to nearly 4500 images and then, due to the increased amount of data, split into a training and validation set with a ration fo 90%. This was achieved using the `split_via.py` function which randomly splits a VIA-formatted annotations file. 
 
@@ -88,6 +92,6 @@ The goal of the experiments was to improve the network quality on the VUFO video
 
 The final results of experiments are stored within the `train` folder of the respective network folder, e.g. `mrcnn_vufo`. The details of the experiment are listed in the README of the network's folder. The naming of the folders indicates the state of the experiment that was applied.
 
-All experiment folders have in common, that the final results (this means always the weights with the highest number of epochs in a folder) were again once run on a video, i.e. video7.3gp of the VUFO dataset and evaluated on the whole 1500 images VUFO set to give an example of the network's performance. The results are stored next to the weights of the experiment. The video.avi and instances.json are the artifacts of the inference run with the produced weights, and the evaluation.txt is the evaluation result on the 1500 images.
+All experiment folders have in common, that the final results (this means always the weights with the highest number of epochs in a folder) were again once run on a video, i.e. video7.3gp of the VUFO dataset (this video was chosen for its diverese objects and difficult scenerey) and evaluated on the whole 1500 images VUFO set to give an example of the network's performance. The results are stored next to the weights of the experiment. The video.avi and instances.json are the artifacts of the inference run with the produced weights, and the evaluation.txt is the evaluation result on the 1500 images.
 
 To inspect the training process simply open tensorboard with the parameter `--logdir=` set to the folder containing the weights and the events. It should then be possible to view the loss functions etc.

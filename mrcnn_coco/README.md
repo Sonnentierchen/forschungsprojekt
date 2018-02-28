@@ -86,7 +86,7 @@ The command takes several parameters, but that makes it rather flexible.
 python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -l assets/output/training/coco/2017/ --trainImagesPaths assets/input/coco/2017/train2017/ --trainAnnotationsPaths assets/input/coco/2017/annotations/instances_train2017.json --valImagesPaths assets/input/coco/2017/val2017/ --valAnnotationsPaths assets/input/coco/2017/annotations/instances_val2017.json -r 1 --epochs 100 --learningRates 0.0003 --layers all
 ```
 
-## Experiments
+## Experiment
 
 Further training was conducted on the MS COCO 2017 dataset. This experiment was performed more of the purpose to get to know the network and a feeling for training than major results. As expected the loss was more jumpy than decreasing.
 
@@ -98,3 +98,19 @@ The training schedule was as suggested by the Matterport programmers:
 `learning rate`: `0.001`, `0.001`, `0.0001`
 
 The resulted weights are stored in the folder `train`.
+
+Evaluation on VUFO 1500 with non-VUFO classes filtered out:
+```
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.192
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.336
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.178
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.095
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.282
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.488
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.197
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.263
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.265
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.137
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.368
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.580
+ ```

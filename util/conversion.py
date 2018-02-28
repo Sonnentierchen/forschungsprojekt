@@ -213,8 +213,8 @@ if __name__ == '__main__':
                         help="The path to the annoations that are to be converted.")
 
     args = parser.parse_args()
-    assert os.path.exists(args.imagesPath)
-    assert os.path.exists(args.annotationsPath)
+    assert os.path.exists(args.imagesPath), "Images path {} does not exist.".format(args.imagesPath)
+    assert os.path.exists(args.annotationsPath), "Annotations path {} does not exist.".format(args.annotationsPath)
 
     result = via_data_to_coco_evaluation_format(args.imagesPath, args.annotationsPath)
 

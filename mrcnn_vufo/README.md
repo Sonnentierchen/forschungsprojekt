@@ -22,6 +22,8 @@ The experiments in the `vufo_400_incorrect_conversion` folder were conducted on 
 
 _All experiment were run using the data only for training, as the dataset was small and it was thought to reduce the small set to much if a validation set was sliced off._
 
+_All evaluation metrics are from running the network on the VUFO 1500 dataset. This choice was made to show the network performance on the final and more relevant VUFO dataset._
+
 #### Original
 
 Here the dataset consisted of only the original 400 VUFO images without any data augmentation.
@@ -29,18 +31,18 @@ Here the dataset consisted of only the original 400 VUFO images without any data
 ##### Training all layers without omitting weights
 
 Training parameters:
-`runs`: `1`
-`layers`: `all`
-`omitted weights`: `none`
-`learning rate`: `0.01`
+`runs`: `1`<br/>
+`layers`: `all`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.01`<br/>
 
 ##### Training all layers by omitting the weights of the bbox head branch
 
 Training parameters:
-`runs`: `1`
-`layers`: `all`
-`omitted weights`: `weights of bbox head branch`
-`learning rate`: `0.01`
+`runs`: `1`<br/>
+`layers`: `all`<br/>
+`omitted weights`: `weights of bbox head branch`<br/>
+`learning rate`: `0.01`<br/>
 
 #### Original and augmented
 
@@ -49,34 +51,34 @@ For these experiments the VUFO 400 dataset was expanded using the data augmentor
 ##### Training all layers without omitting weights
 
 Training parameters:
-`runs`: `1`
-`layers`: `all`
-`omitted weights`: `none`
-`learning rate`: `0.0003`
+`runs`: `1`<br/>
+`layers`: `all`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.0003`<br/>
 
 ##### Training all layers by omitting the weights of the bbox head branch
 
 Training parameters:
-`runs`: `1`
-`layers`: `all`
-`omitted weights`: `weights of bbox head branch`
-`learning rate`: `0.001`
+`runs`: `1`<br/>
+`layers`: `all`<br/>
+`omitted weights`: `weights of bbox head branch`<br/>
+`learning rate`: `0.001`<br/>
 
 ##### Training the bbox head branch only without omitting weights
 
 Training parameters:
-`runs`: `1`
-`layers`: `bbox head branch only`
-`omitted weights`: `none`
-`learning rate`: `0.0003`
+`runs`: `1`<br/>
+`layers`: `bbox head branch only`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.0003`<br/>
 
 ##### Training the bbox head branch only omitting the weights of the bbox head branch
 
 Training parameters:
-`runs`: `1`
-`layers`: `bbox head branch only`
-`omitted weights`: `weights of bbox head branch`
-`learning rate`: `0.0003`
+`runs`: `1`<br/>
+`layers`: `bbox head branch only`<br/>
+`omitted weights`: `weights of bbox head branch`<br/>
+`learning rate`: `0.0003`<br/>
 
 #### Original and augmented and the COCO val set for validation
 
@@ -85,14 +87,14 @@ For this experiment, the validation part of the COCO 2017 dataste was added to k
 ##### Training the bbox head branch only without omitting weights
 
 Training parameters:
-`runs`: `1`
-`layers`: `bbox head branch only`
-`omitted weights`: `none`
-`learning rate`: `0.0003`
+`runs`: `1`<br/>
+`layers`: `bbox head branch only`<br/>
+`omitted weights`: `none`<br/>
+`learning rate`: `0.0003`<br/>
 
 ### VUFO 1500
 
-The following experiments were conducted using the VUFO 1500 dataset with 1500 images and the corrected implementation of the conversion function.
+The following experiments, which are located in the folder `vufo_1500_correct_conversion`, were conducted using the VUFO 1500 dataset with 1500 images and the corrected implementation of the conversion function.
 Since the dataset expanded to nearly 4500 images, 1500 original images, 1500 cropped images and 1500 noisy images, the set was split into a training and validation set. As an orientation the new split of the COCO 2017 dataset was approximated by 90% training data and 10% validation data, i.e. about 4050 images of the VUFO dataset for training, and about 450 for validation. The split was achieved using the `split_via.py` script in the `util` folder, which randomly separates a given VUFO formatted annotations file.
 
 #### Original and augmented and the COCO val set for validation

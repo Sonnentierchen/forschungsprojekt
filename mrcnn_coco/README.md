@@ -59,10 +59,6 @@ python mrcnn_coco/evaluation.py -w mrcnn_coco/train/coco/training_all_layers/0.0
 
 `mrcnn_coco/evaluation_filtered.py` is the same function as stated above but filters out all non-VUFO classes.
 
-### Evaluation VIA and Evaluation VIA filtered
-
-Both scripts are convenience methods so that the user does not have to convert the VIA-formatted annotation files first using the conversion.py script. This is done automatically and then the normal evaluation or filtered evaluation is run.
-
 ## Training
 
 The following section explains how to further train the network using the function `mrcnn_coco/training.py`.

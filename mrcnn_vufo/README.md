@@ -18,6 +18,12 @@ The experiments undertaken with the model in `mrcnn_vufo` were more elaborate th
 
 The results of the training, i.e. the weights are stored in the folder that describe the training parameters. Next to each weights there is the video7 of the VUFO dataset with the bounding boxes drawn into it, 3 extracted frames from the video and the evaluation file that stores the evaluation results of the network on the VUFO 1500 dataset.
 
+## Training
+
+If you want to include COCO annotation files in the training process, be sure to remove the non-VUFO classes first, using the script in `util` or use the files with the classes already removed which are supplied in `assets/input/coco`.
+
+To learn more on training please refer to the README in `mrcnn_coco`.
+
 ### VUFO 400
 
 The experiments in the `vufo_400_incorrect_conversion` folder were conducted on the VUFO dataset consisting of 400 images. Unfortunately, I figured out later that the script `conversion.py` contained an error, which caused the width or height of a bounding box to be negative in some rather rare cases. The network did not complain during training and probably also took into account the negative widths and heights. That's why the experiments conducted on the VUFO 400 dataset are probably obsolete. The error was later corrected in the VUFO 1500 dataset.

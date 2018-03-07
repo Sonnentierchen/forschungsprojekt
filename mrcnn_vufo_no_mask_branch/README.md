@@ -4,6 +4,12 @@ The purpose of this modification was to get rif off the mask branch and therefor
 
 **NOTE** Since the inference, evaluation and training scripts work just as the ones in `mrcnn_coco` they are not explained here again. The key differences are the same as the one in `mrcnn_vufo` but additionally and more importantly, the mask branch has been cut off.
 
+## Training
+
+If you want to include COCO annotation files in the training process, be sure to remove the non-VUFO classes first, using the script in `util` or use the files with the classes already removed which are supplied in `assets/input/coco`.
+
+To learn more on training please refer to the README in `mrcnn_coco`.
+
 ## Experiments
 
 ### VUFO 1500

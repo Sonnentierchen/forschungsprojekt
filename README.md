@@ -14,7 +14,9 @@ Since there are a couple of things that need attention and a notes list at the e
 * If you're trying to perform inference on a whole video with a video file and receive the following error: `ValueError: not enough values to unpack (expected 2, got 0)` then the video was not found. Check that the file exists.
 * If the class loss becomes `nan` during training, you probably used the COCO annotations but with non-VUFO classes still present. This becomes a problem in `mrcnn_vufo` and `mrcnn_vufo_no_mask_branch` as they have omitted those classes. If this happends, use the annotation files with the non-VUFO classes removed: `instances_val2017_vufo.json` and `instances_train2017_vufo.json`. They are both provided in the `assets` folder. If you need other COCO annotations without non-VUFO classes please refer to the README in the `util` folder.
 
-# The network
+# The networ
+
+The network basis is the implementation that can be found at https://github.com/matterport/Mask_RCNN.
 
 ## Structure
 
@@ -35,7 +37,7 @@ The mask branch is omitted here because it's not relevant to us. The network use
 
 ## Weights
 
-The initial pre-trained weights of the network were taken from https://github.com/matterport/Mask_RCNN/releases and resemble the state of November 2017.
+The initial weights of the network were taken from https://github.com/matterport/Mask_RCNN/releases, pre-trained on the MS COCO 2017 dataset as of November 2017.
 
 # The structure of the project
 
@@ -71,7 +73,7 @@ Based on `mrcnn_vufo`, in this model the mask branch is cut off and only the bra
 
 The project by Matterport uses the MS COCO dataset to train the network and COCO's evaluation tools. For furhter information visit their website at http://cocodataset.org.
 
-# The dataset
+# The VUFO dataset
 
 _Since it does not make any sense to keep the smaller dataset it has been omitted and only the larger one is shipped with this project._
 
@@ -96,3 +98,7 @@ The final results of experiments are stored within the `train` folder of the res
 All experiment folders have in common, that the final results (this means always the weights with the highest number of epochs in a folder) were again once run on a video, i.e. video7.3gp of the VUFO dataset (this video was chosen for its diverese objects and difficult scenerey) and evaluated on the whole 1500 images VUFO set to give an example of the network's performance. The results are stored next to the weights of the experiment. The video.avi and instances.json are the artifacts of the inference run with the produced weights, and the evaluation.txt is the evaluation result on the 1500 images.
 
 To inspect the training process simply open tensorboard with the parameter `--logdir=` set to the folder containing the weights and the events. It should then be possible to view the loss functions etc.
+
+# Disclaimer
+
+I did not contribute to the code that can be found at https://github.com/matterport/Mask_RCNN. All modifications I implemented are solely in this repository. To copyright to the original code lies with the authors of Matterport and contributers and the modifications in this repository are under my copyright.

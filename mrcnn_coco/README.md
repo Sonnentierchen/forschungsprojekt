@@ -54,7 +54,7 @@ The following section explains how to perform evaluation with the code in `/mrcn
 The following command evaluates the weights that were trained on COCO data on the 1500 VUFO dataset.
 
 ```
-python mrcnn_coco/evaluation.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -i assets/input/vufo_1500/original/all_videos/ -g assets/input/vufo_1500/original/all_videos/all_videos_annotations_converted.json -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -l 1200
+python mrcnn_coco/evaluation.py -w mrcnn_coco/train/coco/training_all_layers/0.001/weights_epoch_0100.h5 -i assets/input/vufo_1500/original/all_videos/ -g assets/input/vufo_1500/original/all_videos/annotations_converted.json -o mrcnn_coco/train/coco/training_all_layers/0.001/unfiltered/ -l 1200
 ```
 
 ### Evaluation Filtered
@@ -85,6 +85,8 @@ The command takes several parameters, but that makes it rather flexible.
 ```
 python mrcnn_coco/training.py -w assets/pre_trained_weights/mask_rcnn_coco_2017_nov.h5 -l assets/output/training/coco/2017/ --trainImagesPaths assets/input/coco/2017/train2017/ --trainAnnotationsPaths assets/input/coco/2017/annotations/instances_train2017.json --valImagesPaths assets/input/coco/2017/val2017/ --valAnnotationsPaths assets/input/coco/2017/annotations/instances_val2017.json -r 1 --epochs 100 --learningRates 0.0003 --layers all
 ```
+
+_If the command does not run, check if you've used the files in the right annotation format, e.g. the json files with the suffix "_converted", since those are the ones that were converted from VIA to COCO format._
 
 ## Experiment
 

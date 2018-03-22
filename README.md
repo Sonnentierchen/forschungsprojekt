@@ -23,12 +23,18 @@ The network basis is the implementation that can be found at https://github.com/
 To get a detailed impression of the network's structure please refer to the paper. A high level sketch is provided here:
 ```
            input + anchors
-                |
+                 |
             ResNet-101
          -----------------
          |               |
     ROI branch    Objectness classification 
          |             branch
+         |               |
+         |---------------|
+                 |
+                 |
+         -----------------
+         |               |
          |               |
    Bounding Box     Classification branch
    Deltas branch
@@ -88,6 +94,10 @@ For VUFO 400, 40 videos were chosen at random and 10 images were extracted from 
 For VUFO 1500, the number of videos was increased to 150, using the old videos as well and again 10 images per video were extracted. This resulted in nearly 1500 images that were annoted by hand using the VIA tool. The reason why only nearly is probably because some frames in the videos are faulty which resulted in less than 10 images for some videos. By re-inspecting the annotated imags there are sometimes see small errors visible. This is why this dataset has to be treated with caution. The images were annoated with the greatest effort, but without a proper QA it is difficult to keep a steady quality. If you want to inspect my annotations you can use the VIA tool in the `via` folder.
 
 To increase the size of the dataset, data augmentation was employed using the `data_augmentor.py` script in the `util` folder. For furhter details please refer to the README in the `util` folder. The augmentor crops images randomly or adds random noise. This way the dataset was expanded to nearly 4500 images and then, due to the increased amount of data, split into a training and validation set with a ration fo 90%. This was achieved using the `split_via.py` function which randomly splits a VIA-formatted annotations file. 
+
+## VUFO 1500 Revised
+
+During the experiments it became clear that the data that the network was furhter trained on reduced the performance of the model. That is the reason why the data was revised and improved in a way that through visual control bounding boxes that were deemd to small or not holding enough information to learn from were removed. Inspecting the data in the VIA editor might raise question as to why a bounding box on a car is missing. This is solely due to the authors take on "informationness" of the object. There was no objective measure when to remove a box but the author's subjective feeling what might decrease the network's performance. This was another way of trying to accomplish the original task of adjusting the network to the VUFO data.
 
 # The experiments
 
